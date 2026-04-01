@@ -214,7 +214,6 @@
       box-shadow: var(--shadow-lg);
     }
     .cta-section {
-      background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4F46E5 100%);
       position: relative;
       overflow: hidden;
     }
@@ -432,19 +431,19 @@
 
   <!-- CTA -->
   <section class="section cta-section">
-    <div class="container" style="text-align:center" data-aos="fade-up">
+    <div class="container cta-content" style="text-align:center" data-aos="fade-up">
       <div style="font-size:3rem;margin-bottom:1rem">🚀</div>
-      <h2 style="color:white;font-size:clamp(1.75rem,4vw,2.5rem);font-weight:800;margin-bottom:1rem">
+      <h2 class="cta-title">
         开始探索 AI 前沿研究
       </h2>
-      <p style="color:rgba(255,255,255,0.7);font-size:1.125rem;max-width:520px;margin:0 auto 2.5rem">
+      <p class="cta-desc">
         深入阅读每一篇报告，在AI时代掌握信息质量、架构设计与未来趋势的第一手洞察。
       </p>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
         <a href="reports.html" class="btn btn-primary btn-lg">
           <i class="fa fa-book-open"></i> 立即阅读
         </a>
-        <a href="about.html" class="btn" style="background:rgba(255,255,255,0.12);color:white;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2)">
+        <a href="about.html" class="btn btn-cta-secondary">
           了解更多
         </a>
       </div>
@@ -503,6 +502,14 @@
   <script>
     // 初始化 AOS
     AOS.init({ duration: 700, easing: 'ease-out-cubic', once: true, offset: 60 });
+
+    // 主题切换按钮绑定
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('theme-toggle'));
+      });
+    }
 
     // 导航滚动效果
     function toggleNav() {

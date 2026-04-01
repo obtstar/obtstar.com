@@ -206,6 +206,262 @@
     .retry-btn {
       margin-top: 1rem;
     }
+
+    /* Font Awesome 图标备用方案 - 使用 Unicode 字符 */
+    .fa, .fas, .far, .fal, .fab {
+      font-style: normal;
+      font-weight: normal;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    /* 搜索图标 */
+    .fa-search:before, .fa.fa-search { content: '🔍'; }
+    /* 菜单图标 */
+    .fa-bars:before, .fa.fa-bars { content: '☰'; }
+    /* 关闭图标 */
+    .fa-times:before, .fa.fa-times { content: '✕'; }
+    /* 刷新图标 */
+    .fa-refresh:before, .fa-refresh, .fa-rotate-right:before { content: '↻'; }
+    /* 网格图标 */
+    .fa-th-large:before { content: '⊞'; }
+    /* 列表图标 */
+    .fa-list:before { content: '☰'; }
+    /* 太阳图标 */
+    .fa-sun:before { content: '☀'; }
+    /* 月亮图标 */
+    .fa-moon:before { content: '☾'; }
+    /* 箭头图标 */
+    .fa-arrow-right:before { content: '→'; }
+    /* 文件图标 */
+    .fa-file-alt:before, .fa-file-text:before { content: '📄'; }
+    /* 标签图标 */
+    .fa-tag:before { content: '🏷'; }
+    /* 书签图标 */
+    .fa-bookmark:before { content: '🔖'; }
+    /* 时钟图标 */
+    .fa-clock:before { content: '🕐'; }
+    /* 页面图标 */
+    .fa-file-lines:before, .fa-file:before { content: '📑'; }
+    /* 来源图标 */
+    .fa-building:before { content: '🏢'; }
+    /* 星星图标 */
+    .fa-star:before { content: '★'; }
+    /* 眼睛图标 */
+    .fa-eye:before { content: '👁'; }
+    /* 链接图标 */
+    .fa-link:before { content: '🔗'; }
+    /* 下载图标 */
+    .fa-download:before { content: '⬇'; }
+    /* 分享图标 */
+    .fa-share:before { content: '↗'; }
+    /* 设置图标 */
+    .fa-cog:before, .fa-gear:before { content: '⚙'; }
+    /* 加号图标 */
+    .fa-plus:before { content: '+'; }
+    /* 减号图标 */
+    .fa-minus:before { content: '−'; }
+    /* 全屏图标 */
+    .fa-expand:before { content: '⛶'; }
+    /* 退出全屏图标 */
+    .fa-compress:before { content: '⊟'; }
+    /* 字体图标 */
+    .fa-font:before { content: 'Aa'; }
+    /* 左箭头 */
+    .fa-arrow-left:before { content: '←'; }
+    /* 右箭头 */
+    .fa-arrow-right:before { content: '→'; }
+    /* 上箭头 */
+    .fa-arrow-up:before { content: '↑'; }
+    /* 日历图标 */
+    .fa-calendar:before { content: '📅'; }
+    /* 用户图标 */
+    .fa-user:before { content: '👤'; }
+    /* 文件备用图标 */
+    .fa-file-alt:before { content: '📄'; }
+    .fa-calendar-check-o:before { content: '📆'; }
+
+    /* Footer 优化样式 */
+    .footer {
+      background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+      color: rgba(255,255,255,0.7);
+      padding: 4rem 0 2rem;
+      position: relative;
+      overflow: hidden;
+      margin-top: 4rem;
+    }
+
+    .footer-glow {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse at center, rgba(99,102,241,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .footer-main {
+      display: grid;
+      grid-template-columns: 1.5fr 2fr;
+      gap: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .footer-logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #818CF8, #A78BFA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-badge {
+      font-size: 0.65rem;
+      padding: 0.25rem 0.5rem;
+      background: rgba(129,140,248,0.2);
+      color: #A78BFA;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-desc {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 1.5rem;
+      max-width: 280px;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .social-link {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.6);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+      background: rgba(129,140,248,0.2);
+      border-color: rgba(129,140,248,0.4);
+      color: #818CF8;
+      transform: translateY(-2px);
+    }
+
+    .footer-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .footer-col h5 {
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.625rem;
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.875rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .footer-links a i {
+      font-size: 0.75rem;
+      opacity: 0.6;
+    }
+
+    .footer-links a:hover {
+      color: #818CF8;
+    }
+
+    .footer-links a:hover i {
+      opacity: 1;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-copyright {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .footer-stats {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.05);
+      padding: 0.375rem 0.75rem;
+      border-radius: 999px;
+    }
+
+    /* 响应式 */
+    @media (max-width: 900px) {
+      .footer-main {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .footer-nav {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .footer-nav {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -354,44 +610,82 @@
   </section>
 
   <!-- Footer -->
-  <footer class="footer" style="margin-top:4rem">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <div class="footer-logo">ObtStar</div>
-        <p class="footer-desc">探索 AI 前沿，洞察数字未来。汇聚最具价值的研究报告与深度分析。</p>
-      </div>
-      <div class="footer-links">
-        <div class="footer-col">
-          <h4>导航</h4>
-          <a href="index.html">首页</a>
-          <a href="reports.html">研究报告</a>
-          <a href="about.html">关于我们</a>
+  <footer class="footer">
+    <div class="footer-glow"></div>
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <div class="footer-logo-row">
+            <span class="footer-logo">ObtStar</span>
+            <span class="footer-badge">Research Hub</span>
+          </div>
+          <p class="footer-desc">探索 AI 前沿，洞察数字未来。汇聚最具价值的研究报告与深度分析。</p>
+          <div class="social-links">
+            <a href="#" class="social-link" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-link" title="Twitter/X"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link" title="RSS"><i class="fas fa-rss"></i></a>
+          </div>
         </div>
-        <div class="footer-col">
-          <h4>资源</h4>
-          <a href="reports.html?cat=ai-quality">AI 信息质量</a>
-          <a href="reports.html?cat=digital">数字化转型</a>
-          <a href="reports.html?cat=prompt">提示工程</a>
+        <div class="footer-nav">
+          <div class="footer-col">
+            <h5>导航</h5>
+            <ul class="footer-links">
+              <li><a href="index.html"><i class="fa fa-home"></i> 首页</a></li>
+              <li><a href="reports.html"><i class="fa fa-book"></i> 研究报告</a></li>
+              <li><a href="about.html"><i class="fa fa-info-circle"></i> 关于我们</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h5>热门主题</h5>
+            <ul class="footer-links">
+              <li><a href="reports.html?cat=ai-quality"><i class="fa fa-star"></i> AI 信息质量</a></li>
+              <li><a href="reports.html?cat=digital"><i class="fa fa-rocket"></i> 数字化转型</a></li>
+              <li><a href="reports.html?cat=prompt"><i class="fa fa-magic"></i> 提示工程</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h5>其他主题</h5>
+            <ul class="footer-links">
+              <li><a href="reports.html?cat=arch"><i class="fa fa-cubes"></i> 架构设计</a></li>
+              <li><a href="reports.html?cat=future"><i class="fa fa-crystal-ball"></i> 未来推演</a></li>
+              <li><a href="reports.html?cat=knowledge"><i class="fa fa-brain"></i> 知识架构</a></li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 ObtStar. All rights reserved.</p>
+      <div class="footer-bottom">
+        <div class="footer-copyright">
+          <span>&copy; 2026 ObtStar. 探索 AI 前沿，洞察数字未来。</span>
+        </div>
+        <div class="footer-stats">
+          <span id="footerStats"></span>
+        </div>
+      </div>
     </div>
   </footer>
 
   <!-- AOS 动画库 -->
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <!-- API 客户端 -->
-  <script src="js/api-client.js"></script>
+  <script src="js/api-client.js?v=202604012318"></script>
   <!-- 主题管理器 -->
   <script src="js/theme-manager.js"></script>
   <!-- 书签系统 -->
   <script src="js/bookmarks.js"></script>
 
   <script>
-    // 初始化 AOS
-    AOS.init({ duration: 650, once: true, offset: 60 });
+    // 初始化 AOS（添加错误处理，CDN 加载失败时不阻断）
+    if (typeof AOS !== 'undefined') {
+      AOS.init({ duration: 650, once: true, offset: 60 });
+    }
+
+    // 主题切换按钮绑定
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('theme-toggle'));
+      });
+    }
 
     // 状态管理
     let currentCat = 'all';
@@ -450,7 +744,7 @@
         const { data: tags } = await ObtStarAPI.getHotTagsCached();
         const hot = tags.slice(0, 8);
         document.getElementById('hotTags').innerHTML =
-          hot.map(({ tag }) => `<span class="tag" style="cursor:pointer" onclick="searchTag('${tag}')">${tag}</span>`).join('');
+          hot.map(({ name }) => `<span class="tag" style="cursor:pointer" onclick="searchTag('${name}')">${name}</span>`).join('');
       } catch (error) {
         console.error('加载热门标签失败:', error);
       }
@@ -508,8 +802,9 @@
     }
 
     // ── 应用筛选 & 排序 ──
-    async function applyFilter() {
-      if (isLoading) return;
+    async function applyFilter(options = {}) {
+      const { skipLoadingCheck = false } = options;
+      if (!skipLoadingCheck && isLoading) return;
 
       currentSort = document.getElementById('sortSelect').value;
 
@@ -582,8 +877,8 @@
                     <div class="report-card-subtitle">${r.subtitle}</div>
                   </div>
                   <div class="report-card-meta" style="border-top:none;padding:0;white-space:nowrap">
-                    <span class="meta-item"><i class="fa fa-file-alt"></i> ${r.pages}页</span>
-                    <span class="meta-item"><i class="fa fa-calendar"></i> ${r.date}</span>
+                    <span class="meta-item"><i class="fa fa-file-lines"></i> ${r.pages}页</span>
+                    <span class="meta-item"><i class="fa fa-clock"></i> ${r.date}</span>
                   </div>
                 </div>
                 <p class="report-card-summary" style="margin-top:0.625rem;-webkit-line-clamp:2">${r.summary}</p>
@@ -623,7 +918,10 @@
         `;
       }).join('');
 
-      AOS.refreshHard();
+      // 刷新 AOS 动画（如果已加载）
+      if (typeof AOS !== 'undefined' && AOS.refreshHard) {
+        AOS.refreshHard();
+      }
     }
 
     // ── 显示错误 ──
@@ -673,7 +971,7 @@
         renderSidebar();
         renderSources();
         renderHotTags();
-        applyFilter();
+        applyFilter({ skipLoadingCheck: true });
 
         // 如果有初始分类，显示分类标题
         if (currentCat !== 'all') {
@@ -683,6 +981,13 @@
             document.getElementById('currentCatName').textContent = cat.name;
             document.getElementById('currentCatHeader').style.display = 'block';
           }
+        }
+
+        // 更新 footer 统计
+        const footerStats = document.getElementById('footerStats');
+        if (footerStats) {
+          const totalPages = allReports.reduce((sum, r) => sum + (r.pages || 0), 0);
+          footerStats.textContent = `${allReports.length} 篇报告 · ${totalPages} 页内容`;
         }
       } catch (error) {
         console.error('初始化失败:', error);

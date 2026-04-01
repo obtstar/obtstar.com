@@ -19,10 +19,17 @@ async function apiRequest(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, { ...defaultOptions, ...options });
+    
+    // 检查 HTTP 状态码
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
     const data = await response.json();
 
-    if (!response.ok || !data.success) {
-      throw new Error(data.error || `HTTP ${response.status}`);
+    // API 返回错误格式 (RFC 7807 Problem Details)
+    if (data.type && data.type.includes('/errors/')) {
+      throw new Error(data.detail || data.title);
     }
 
     return data;
@@ -145,8 +152,8 @@ async function getCategoriesCached() {
   const cached = getCached('categories');
   if (cached) return { data: cached };
   const result = await getCategories();
-  setCached('categories', result.data);
-  return result;
+  setCached('categories', result);
+  return { data: result };
 }
 
 async function getReportsCached(params = {}) {
@@ -171,16 +178,16 @@ async function getHotTagsCached() {
   const cached = getCached('tags');
   if (cached) return { data: cached };
   const result = await getHotTags();
-  setCached('tags', result.data);
-  return result;
+  setCached('tags', result);
+  return { data: result };
 }
 
 async function getSourcesCached() {
   const cached = getCached('sources');
   if (cached) return { data: cached };
   const result = await getSources();
-  setCached('sources', result.data);
-  return result;
+  setCached('sources', result);
+  return { data: result };
 }
 
 // ==================== 导出 ====================

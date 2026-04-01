@@ -3,6 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const { handleAPIRequest } = require('./api');
 
+// 服务器根目录
+const ROOT_DIR = __dirname;
+
 const server = http.createServer((req, res) => {
   // 解析URL，移除查询参数
   let pathname = req.url.split('?')[0];
@@ -12,13 +15,8 @@ const server = http.createServer((req, res) => {
     return handleAPIRequest(req, res);
   }
 
-  // 静态文件处理
-  let filePath = '.' + pathname;
-
-  // 默认首页
-  if (filePath === './') {
-    filePath = './index.html';
-  }
+  // 静态文件处理 - 使用绝对路径
+  let filePath = path.join(ROOT_DIR, pathname === '/' ? 'index.html' : pathname);
 
   // 获取文件扩展名
   const extname = String(path.extname(filePath)).toLowerCase();

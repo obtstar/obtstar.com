@@ -478,6 +478,14 @@
   <script>
     AOS.init({ duration: 650, easing: 'ease-out-cubic', once: true, offset: 50 });
 
+    // 主题切换按钮绑定
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('theme-toggle'));
+      });
+    }
+
     function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
     window.addEventListener('scroll', () => {
       document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);

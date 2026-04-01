@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>研究报告库 · ObtStar</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" />
   <style>
@@ -98,105 +99,131 @@
     }
     .view-btn {
       padding: 0.375rem 0.625rem;
-      border-radius: calc(var(--radius-md) - 3px);
+      border-radius: var(--radius-sm);
       cursor: pointer;
       color: var(--text-muted);
       transition: all 0.2s ease;
       font-size: 0.875rem;
     }
-    .view-btn.active { background: white; color: var(--primary); box-shadow: var(--shadow-sm); }
-
+    .view-btn:hover { color: var(--text-body); }
+    .view-btn.active {
+      background: var(--bg-white);
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
     .sort-select {
       padding: 0.5rem 0.875rem;
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      font-size: 0.875rem;
+      background: var(--bg-white);
       color: var(--text-body);
-      background: white;
-      cursor: pointer;
-      outline: none;
-      font-family: inherit;
-    }
-    .sort-select:focus { border-color: var(--primary); }
-
-    /* 结果信息栏 */
-    .results-info {
       font-size: 0.875rem;
-      color: var(--text-muted);
-    }
-    .results-info strong { color: var(--text-title); }
-
-    /* 列表视图 */
-    .list-view .report-card {
-      flex-direction: row;
-      gap: 1.5rem;
-      align-items: flex-start;
-    }
-    .list-view .report-card .card-aside {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      flex-shrink: 0;
-      min-width: 120px;
-      padding: 0.5rem;
-      background: var(--bg-subtle);
-      border-radius: var(--radius-md);
-    }
-
-    /* 新增入口卡片 */
-    .add-report-card {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
       cursor: pointer;
-      transition: all var(--transition);
-      background: transparent;
+    }
+    .results-info {
+      font-size: 0.9375rem;
       color: var(--text-muted);
-      min-height: 220px;
     }
-    .add-report-card:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-      background: rgba(79,70,229,0.04);
-      transform: translateY(-4px);
+    .results-info strong {
+      color: var(--text-title);
+      font-weight: 700;
     }
-    .add-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.5; transition: all var(--transition); }
-    .add-report-card:hover .add-icon { opacity: 1; transform: scale(1.1); }
 
-    /* 标签过滤条 */
+    /* 标签筛选区 */
     .tag-filter-area {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin-top: 0.75rem;
+      margin-top: 0.875rem;
+    }
+
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    .empty-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-title);
+      margin-bottom: 0.5rem;
+    }
+    .empty-desc {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* 列表视图样式 */
+    .list-view .report-card {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 1.25rem;
+      padding: 1.25rem 1.5rem;
+    }
+    .list-view .report-card-header {
+      flex-direction: row;
+      width: auto;
+      gap: 1rem;
+    }
+    .list-view .report-card-icon {
+      width: 56px;
+      height: 56px;
+    }
+    .list-view .report-card-summary {
+      -webkit-line-clamp: 2;
+    }
+
+    /* 加载状态 */
+    .loading-skeleton {
+      background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--bg-white) 50%, var(--bg-subtle) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s ease-in-out infinite;
+      border-radius: var(--radius-md);
+    }
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .skeleton-card {
+      height: 280px;
+      border-radius: var(--radius-xl);
+    }
+
+    /* 错误状态 */
+    .error-state {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .error-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .retry-btn {
+      margin-top: 1rem;
     }
   </style>
 </head>
-<body class="page-body">
-
-  <div class="reading-progress" id="readingProgress" style="width:0%"></div>
-
+<body>
   <!-- 导航栏 -->
   <nav class="navbar" id="navbar">
-    <div class="container" style="display:flex;align-items:center;justify-content:space-between;width:100%">
-      <a href="index.html" class="logo">Obt<span>★</span>Star</a>
-      <ul class="nav-links" id="navLinks">
-        <li><a href="index.html">首页</a></li>
-        <li><a href="reports.html" class="active">研究报告</a></li>
-        <li><a href="about.html">关于</a></li>
-        <li><a href="reports.html" class="nav-cta">浏览全部 →</a></li>
-      </ul>
-      <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+    <div class="nav-container">
+      <a href="index.html" class="logo">ObtStar</a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">首页</a>
+        <a href="reports.html" class="active">研究报告</a>
+        <a href="about.html">关于</a>
+      </div>
+      <button class="nav-toggle" onclick="toggleNav()"><i class="fa fa-bars"></i></button>
     </div>
+    <div class="reading-progress" id="readingProgress"></div>
   </nav>
 
-  <!-- 页面 Hero -->
+  <!-- Hero 区域 -->
   <div class="reports-hero">
     <div class="container">
       <div class="breadcrumb" style="margin-bottom:1.5rem" data-aos="fade-right">
@@ -253,13 +280,13 @@
         <!-- 工具栏 -->
         <div class="reports-toolbar">
           <div class="toolbar-left">
-            <span class="results-info" id="resultsInfo">共 <strong>6</strong> 篇报告</span>
+            <span class="results-info" id="resultsInfo">加载中...</span>
             <div class="filter-bar" id="filterBar" style="padding:0">
               <!-- 快速筛选标签 -->
             </div>
           </div>
           <div class="toolbar-right">
-            <select class="sort-select" id="sortSelect" onchange="applyFilter()">
+            <select class="sort-select" id="sortSelect">
               <option value="date-desc">最新优先</option>
               <option value="date-asc">最早优先</option>
               <option value="pages-desc">页数最多</option>
@@ -292,61 +319,84 @@
         </div>
 
         <!-- 报告卡片网格 -->
-        <div id="reportsContainer" class="grid-3" style="gap:1.25rem"></div>
+        <div id="reportsContainer" class="grid-3" style="gap:1.25rem">
+          <!-- 加载骨架屏 -->
+          <div class="loading-skeleton skeleton-card"></div>
+          <div class="loading-skeleton skeleton-card"></div>
+          <div class="loading-skeleton skeleton-card"></div>
+        </div>
 
         <!-- 空状态 -->
         <div id="emptyState" class="empty-state" style="display:none">
           <div class="empty-icon">🔍</div>
-          <div class="empty-title">没有找到相关报告</div>
-          <div class="empty-desc">试试换个关键词，或者清除筛选条件</div>
-          <button onclick="resetAll()" class="btn btn-primary btn-sm" style="margin-top:1rem">清除所有筛选</button>
+          <div class="empty-title">未找到相关报告</div>
+          <p class="empty-desc">尝试使用其他关键词，或清除筛选条件重新搜索</p>
+          <button onclick="resetAll()" class="btn btn-primary">清除筛选</button>
         </div>
 
-        <!-- ↓ 新增报告入口 ↓ -->
-        <div style="margin-top:1.5rem">
-          <div class="add-report-card" onclick="location.href='about.html#contribute'">
-            <div class="add-icon">＋</div>
-            <div style="font-weight:600;margin-bottom:0.375rem">提交新报告</div>
-            <div style="font-size:0.875rem">如果您有优质研究报告希望收录到这里，欢迎联系我们</div>
-          </div>
+        <!-- 错误状态 -->
+        <div id="errorState" class="error-state" style="display:none">
+          <div class="error-icon">⚠️</div>
+          <div class="empty-title">加载失败</div>
+          <p class="empty-desc" id="errorMessage">无法连接到服务器，请稍后重试</p>
+          <button onclick="initPage()" class="btn btn-primary retry-btn">
+            <i class="fa fa-refresh"></i> 重新加载
+          </button>
         </div>
       </div>
-
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem">
-        <div class="footer-logo">Obt★Star</div>
-        <div style="display:flex;gap:2rem;font-size:0.875rem">
-          <a href="index.html" style="color:rgba(255,255,255,0.55)">首页</a>
-          <a href="reports.html" style="color:rgba(255,255,255,0.55)">报告库</a>
-          <a href="about.html" style="color:rgba(255,255,255,0.55)">关于</a>
+  <footer class="footer" style="margin-top:4rem">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="footer-logo">ObtStar</div>
+        <p class="footer-desc">探索 AI 前沿，洞察数字未来。汇聚最具价值的研究报告与深度分析。</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>导航</h4>
+          <a href="index.html">首页</a>
+          <a href="reports.html">研究报告</a>
+          <a href="about.html">关于我们</a>
+        </div>
+        <div class="footer-col">
+          <h4>资源</h4>
+          <a href="reports.html?cat=ai-quality">AI 信息质量</a>
+          <a href="reports.html?cat=digital">数字化转型</a>
+          <a href="reports.html?cat=prompt">提示工程</a>
         </div>
       </div>
-      <div class="footer-bottom">
-        <div>© 2026 ObtStar · All rights reserved</div>
-      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ObtStar. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="data/reports.js"></script>
+  <!-- AOS 动画库 -->
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-  <script>
-    AOS.init({ duration: 600, easing: 'ease-out-cubic', once: true, offset: 40 });
+  <!-- API 客户端 -->
+  <script src="js/api-client.js"></script>
 
+  <script>
+    // 初始化 AOS
+    AOS.init({ duration: 650, once: true, offset: 60 });
+
+    // 状态管理
     let currentCat = 'all';
     let currentSearch = '';
-    let currentView = 'grid';
     let currentSort = 'date-desc';
+    let currentView = 'grid';
+    let categories = [];
+    let allReports = [];
+    let isLoading = false;
 
-    // 从 URL 读取分类参数
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('cat')) currentCat = urlParams.get('cat');
+    // 从 URL 解析初始状态
+    const urlParams = new URLSearchParams(location.search);
+    if (urlParams.has('cat')) currentCat = urlParams.get('cat');
 
-    // ── 导航 ──
+    // 导航切换
     function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
     window.addEventListener('scroll', () => {
       document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
@@ -357,9 +407,10 @@
     // ── 渲染侧边栏分类 ──
     function renderSidebar() {
       const counts = {};
-      REPORTS.forEach(r => { counts[r.category] = (counts[r.category] || 0) + 1; });
-      const total = REPORTS.length;
-      document.getElementById('sidebarCats').innerHTML = CATEGORIES.map(c => {
+      allReports.forEach(r => { counts[r.category] = (counts[r.category] || 0) + 1; });
+      const total = allReports.length;
+
+      document.getElementById('sidebarCats').innerHTML = categories.map(c => {
         const cnt = c.id === 'all' ? total : (counts[c.id] || 0);
         return `
           <div class="sidebar-cat-item ${currentCat === c.id ? 'active' : ''}" onclick="setCategory('${c.id}')">
@@ -368,10 +419,13 @@
           </div>
         `;
       }).join('');
+    }
 
-      // 来源
+    // ── 渲染来源统计 ──
+    function renderSources() {
       const sources = {};
-      REPORTS.forEach(r => { sources[r.source] = (sources[r.source] || 0) + 1; });
+      allReports.forEach(r => { sources[r.source] = (sources[r.source] || 0) + 1; });
+
       document.getElementById('sidebarSources').innerHTML = Object.entries(sources).map(([s, cnt]) => `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0.4rem 0.5rem;font-size:0.875rem;color:var(--text-body)">
           <span>${s}</span>
@@ -381,12 +435,15 @@
     }
 
     // ── 渲染热门标签 ──
-    function renderHotTags() {
-      const tagMap = {};
-      REPORTS.forEach(r => r.tags.forEach(t => { tagMap[t] = (tagMap[t] || 0) + 1; }));
-      const hot = Object.entries(tagMap).sort((a,b) => b[1]-a[1]).slice(0, 8);
-      document.getElementById('hotTags').innerHTML =
-        hot.map(([t]) => `<span class="tag" style="cursor:pointer" onclick="searchTag('${t}')">${t}</span>`).join('');
+    async function renderHotTags() {
+      try {
+        const { data: tags } = await ObtStarAPI.getHotTagsCached();
+        const hot = tags.slice(0, 8);
+        document.getElementById('hotTags').innerHTML =
+          hot.map(({ tag }) => `<span class="tag" style="cursor:pointer" onclick="searchTag('${tag}')">${tag}</span>`).join('');
+      } catch (error) {
+        console.error('加载热门标签失败:', error);
+      }
     }
 
     // ── 设置分类 ──
@@ -395,13 +452,16 @@
       history.pushState({}, '', id === 'all' ? 'reports.html' : `reports.html?cat=${id}`);
       renderSidebar();
       applyFilter();
+
       const header = document.getElementById('currentCatHeader');
       if (id !== 'all') {
-        const cat = CATEGORIES.find(c => c.id === id);
+        const cat = categories.find(c => c.id === id);
         document.getElementById('currentCatIcon').textContent = cat.icon;
         document.getElementById('currentCatName').textContent = cat.name;
         header.style.display = 'block';
-      } else { header.style.display = 'none'; }
+      } else {
+        header.style.display = 'none';
+      }
     }
 
     // ── 搜索标签点击 ──
@@ -419,7 +479,7 @@
       const container = document.getElementById('reportsContainer');
       if (v === 'grid') {
         container.classList.remove('list-view');
-        container.style.gridTemplateColumns = 'repeat(3,1fr)';
+        container.style.gridTemplateColumns = '';
       } else {
         container.classList.add('list-view');
         container.style.gridTemplateColumns = '1fr';
@@ -434,47 +494,67 @@
       document.getElementById('currentCatHeader').style.display = 'none';
       renderSidebar();
       applyFilter();
+      history.pushState({}, '', 'reports.html');
     }
 
     // ── 应用筛选 & 排序 ──
-    function applyFilter() {
+    async function applyFilter() {
+      if (isLoading) return;
+
       currentSort = document.getElementById('sortSelect').value;
-      let filtered = REPORTS.filter(r => {
-        const matchCat = currentCat === 'all' || r.category === currentCat;
-        const q = currentSearch.toLowerCase();
-        const matchSearch = !q || r.title.toLowerCase().includes(q)
-          || (r.subtitle || '').toLowerCase().includes(q)
-          || r.summary.toLowerCase().includes(q)
-          || r.tags.some(t => t.toLowerCase().includes(q));
-        return matchCat && matchSearch;
-      });
 
-      // 排序
-      filtered.sort((a, b) => {
-        if (currentSort === 'date-desc') return b.date.localeCompare(a.date);
-        if (currentSort === 'date-asc') return a.date.localeCompare(b.date);
-        if (currentSort === 'pages-desc') return b.pages - a.pages;
-        if (currentSort === 'pages-asc') return a.pages - b.pages;
-        if (currentSort === 'title') return a.title.localeCompare(b.title, 'zh');
-        return 0;
-      });
+      // 构建筛选参数
+      const params = {
+        sort: currentSort
+      };
 
-      // 更新分类标题计数
-      document.getElementById('currentCatCount').textContent = `找到 ${filtered.length} 篇报告`;
-      document.getElementById('resultsInfo').innerHTML = `共 <strong>${filtered.length}</strong> 篇报告`;
-
-      const container = document.getElementById('reportsContainer');
-      const empty = document.getElementById('emptyState');
-
-      if (!filtered.length) {
-        container.innerHTML = '';
-        empty.style.display = 'block';
-        return;
+      if (currentCat !== 'all') {
+        params.category = currentCat;
       }
-      empty.style.display = 'none';
 
-      container.innerHTML = filtered.map((r, i) => {
-        const cat = CATEGORIES.find(c => c.id === r.category);
+      if (currentSearch) {
+        params.search = currentSearch;
+      }
+
+      try {
+        // 显示加载状态
+        const container = document.getElementById('reportsContainer');
+        if (allReports.length === 0) {
+          container.innerHTML = `
+            <div class="loading-skeleton skeleton-card"></div>
+            <div class="loading-skeleton skeleton-card"></div>
+            <div class="loading-skeleton skeleton-card"></div>
+          `;
+        }
+
+        const { data: filtered, meta } = await ObtStarAPI.getReportsCached(params);
+
+        // 更新分类标题计数
+        document.getElementById('currentCatCount').textContent = `找到 ${meta.total} 篇报告`;
+        document.getElementById('resultsInfo').innerHTML = `共 <strong>${meta.total}</strong> 篇报告`;
+
+        const empty = document.getElementById('emptyState');
+
+        if (!filtered.length) {
+          container.innerHTML = '';
+          empty.style.display = 'block';
+          return;
+        }
+        empty.style.display = 'none';
+
+        renderReports(filtered);
+      } catch (error) {
+        console.error('加载报告失败:', error);
+        showError('加载报告失败，请检查网络连接');
+      }
+    }
+
+    // ── 渲染报告列表 ──
+    function renderReports(reports) {
+      const container = document.getElementById('reportsContainer');
+
+      container.innerHTML = reports.map((r, i) => {
+        const cat = categories.find(c => c.id === r.category);
         if (currentView === 'list') {
           return `
             <div class="report-card" onclick="location.href='report-detail.html?id=${r.id}'" style="flex-direction:row;align-items:flex-start;gap:1.25rem;padding:1.25rem 1.5rem">
@@ -532,27 +612,78 @@
           </div>
         `;
       }).join('');
+
       AOS.refreshHard();
     }
 
+    // ── 显示错误 ──
+    function showError(message) {
+      document.getElementById('reportsContainer').innerHTML = '';
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('errorState').style.display = 'block';
+      document.getElementById('errorMessage').textContent = message;
+    }
+
+    // ── 隐藏错误 ──
+    function hideError() {
+      document.getElementById('errorState').style.display = 'none';
+    }
+
     // 搜索监听
+    let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', (e) => {
-      currentSearch = e.target.value;
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        currentSearch = e.target.value;
+        applyFilter();
+      }, 300);
+    });
+
+    // 排序监听
+    document.getElementById('sortSelect').addEventListener('change', () => {
       applyFilter();
     });
 
-    // 初始化
-    renderSidebar();
-    renderHotTags();
-    applyFilter();
-    if (currentCat !== 'all') {
-      const cat = CATEGORIES.find(c => c.id === currentCat);
-      if (cat) {
-        document.getElementById('currentCatIcon').textContent = cat.icon;
-        document.getElementById('currentCatName').textContent = cat.name;
-        document.getElementById('currentCatHeader').style.display = 'block';
+    // ── 初始化页面 ──
+    async function initPage() {
+      isLoading = true;
+      hideError();
+
+      try {
+        // 并行加载分类和报告
+        const [categoriesRes, reportsRes] = await Promise.all([
+          ObtStarAPI.getCategoriesCached(),
+          ObtStarAPI.getReportsCached({ sort: currentSort })
+        ]);
+
+        categories = categoriesRes.data;
+        allReports = reportsRes.data;
+
+        // 渲染页面
+        renderSidebar();
+        renderSources();
+        renderHotTags();
+        applyFilter();
+
+        // 如果有初始分类，显示分类标题
+        if (currentCat !== 'all') {
+          const cat = categories.find(c => c.id === currentCat);
+          if (cat) {
+            document.getElementById('currentCatIcon').textContent = cat.icon;
+            document.getElementById('currentCatName').textContent = cat.name;
+            document.getElementById('currentCatHeader').style.display = 'block';
+          }
+        }
+      } catch (error) {
+        console.error('初始化失败:', error);
+        showError('无法连接到服务器，请检查网络连接或稍后重试');
+      } finally {
+        isLoading = false;
       }
     }
+
+    // 启动
+    initPage();
   </script>
 </body>
 </html>

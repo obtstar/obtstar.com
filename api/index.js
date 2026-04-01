@@ -1,6 +1,6 @@
 /**
  * ObtStar API 模块
- * 将静态数据转换为 REST API 端点
+ * 遵循 RESTful API 规范 (RFC 7231) 和 W3C HTTP 标准
  */
 
 const fs = require('fs');
@@ -13,12 +13,26 @@ const contentCache = new Map();
 const manifestCache = new Map();
 
 /**
+ * 标准 HTTP 状态码
+ */
+const HTTP_STATUS = {
+  OK: 200,
+  CREATED: 201,
+  NO_CONTENT: 204,
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  METHOD_NOT_ALLOWED: 405,
+  NOT_ACCEPTABLE: 406,
+  UNSUPPORTED_MEDIA_TYPE: 415,
+  INTERNAL_SERVER_ERROR: 500
+};
+
+/**
  * 加载分类数据
  */
 function loadCategories() {
   if (categoriesCache) return categoriesCache;
 
-  // 从 reports.js 提取分类数据
   categoriesCache = [
     { id: 'all', name: '全部', icon: '🌐', color: '#4F46E5' },
     { id: 'ai-quality', name: 'AI 信息质量', icon: '🛡️', color: '#7C3AED' },
@@ -41,20 +55,16 @@ function loadReports() {
   const dataDir = path.join(__dirname, '..', 'data');
   const reportsFile = path.join(dataDir, 'reports.js');
 
-  // 读取并解析 reports.js 文件
   const content = fs.readFileSync(reportsFile, 'utf-8');
-
-  // 使用正则提取 REPORTS 数组内容
   const reportsMatch = content.match(/const\s+REPORTS\s*=\s*(\[[\s\S]*?\]);/);
+  
   if (!reportsMatch) {
     throw new Error('无法解析 REPORTS 数据');
   }
 
-  // 安全地解析 JavaScript 数组（使用 Function 构造器）
   try {
     reportsCache = new Function('return ' + reportsMatch[1])();
   } catch (e) {
-    // 如果解析失败，使用硬编码数据作为后备
     reportsCache = getFallbackReports();
   }
 
@@ -62,7 +72,7 @@ function loadReports() {
 }
 
 /**
- * 后备报告数据（当解析失败时使用）
+ * 后备报告数据
  */
 function getFallbackReports() {
   return [
@@ -207,17 +217,14 @@ function loadContentChunk(reportId, chunkIndex) {
   }
 
   const content = fs.readFileSync(chunkPath, 'utf-8');
-
-  // 提取 window.REPORT_CHUNK_* 对象内容
-  // 匹配 window.REPORT_CHUNK_xxx = { ... }; 格式，在第一个 }; 处停止
   const chunkMatch = content.match(/window\.REPORT_CHUNK_[\w_]+\s*=\s*({[\s\S]*?\n}\s*;)/m);
+  
   if (!chunkMatch) {
     console.error(`无法匹配内容块: ${reportId}/${chunkIndex}`);
     return null;
   }
 
   try {
-    // 移除末尾的分号
     const jsonStr = chunkMatch[1].replace(/;\s*$/, '');
     const chunk = new Function('return ' + jsonStr)();
     contentCache.set(cacheKey, chunk);
@@ -229,18 +236,111 @@ function loadContentChunk(reportId, chunkIndex) {
 }
 
 /**
- * 获取所有分类
+ * 生成 ETag
  */
-function getCategories(req, res) {
-  const categories = loadCategories();
-  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify({ success: true, data: categories }));
+function generateETag(data) {
+  const crypto = require('crypto');
+  return crypto.createHash('md5').update(JSON.stringify(data)).digest('hex');
 }
 
 /**
- * 获取报告列表（支持筛选和排序）
+ * 设置标准响应头
+ */
+function setStandardHeaders(res, options = {}) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+  res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page, X-Limit');
+  res.setHeader('Vary', 'Accept-Encoding');
+  
+  if (options.cache) {
+    res.setHeader('Cache-Control', 'public, max-age=300');
+  } else {
+    res.setHeader('Cache-Control', 'no-cache');
+  }
+  
+  if (options.etag) {
+    res.setHeader('ETag', `"${options.etag}"`);
+  }
+}
+
+/**
+ * 发送成功响应
+ */
+function sendResponse(res, statusCode, data, options = {}) {
+  setStandardHeaders(res, options);
+  res.writeHead(statusCode);
+  res.end(JSON.stringify(data));
+}
+
+/**
+ * 发送错误响应 (RFC 7807 Problem Details)
+ */
+function sendError(res, statusCode, title, detail, instance) {
+  const errorResponse = {
+    type: `https://api.obtstar.com/errors/${statusCode}`,
+    title,
+    status: statusCode,
+    detail,
+    instance: instance || '/api' + (require('url').parse(res.req.url).pathname)
+  };
+  
+  res.setHeader('Content-Type', 'application/problem+json; charset=utf-8');
+  res.writeHead(statusCode);
+  res.end(JSON.stringify(errorResponse));
+}
+
+/**
+ * 检查内容协商
+ */
+function checkContentNegotiation(req, res) {
+  const accept = req.headers.accept || '*/*';
+  
+  if (accept !== '*/*' && !accept.includes('application/json') && !accept.includes('*/*')) {
+    sendError(
+      res, 
+      HTTP_STATUS.NOT_ACCEPTABLE, 
+      'Not Acceptable',
+      'API 仅支持 application/json 响应格式'
+    );
+    return false;
+  }
+  
+  return true;
+}
+
+/**
+ * 验证报告 ID 格式
+ */
+function isValidReportId(id) {
+  return typeof id === 'string' && /^[a-z0-9-]+$/.test(id) && id.length <= 64;
+}
+
+/**
+ * GET /categories - 获取所有分类
+ */
+function getCategories(req, res) {
+  if (!checkContentNegotiation(req, res)) return;
+  
+  const categories = loadCategories();
+  const etag = generateETag(categories);
+  
+  if (req.headers['if-none-match'] === `"${etag}"`) {
+    res.writeHead(304);
+    res.end();
+    return;
+  }
+  
+  sendResponse(res, HTTP_STATUS.OK, categories, { cache: true, etag });
+}
+
+/**
+ * GET /reports - 获取报告列表
  */
 function getReports(req, res, query) {
+  if (!checkContentNegotiation(req, res)) return;
+  
   let reports = loadReports();
 
   // 分类筛选
@@ -265,87 +365,166 @@ function getReports(req, res, query) {
   }
 
   // 排序
-  const sort = query.sort || 'date-desc';
-  switch (sort) {
-    case 'date-desc':
-      reports.sort((a, b) => new Date(b.date) - new Date(a.date));
-      break;
-    case 'date-asc':
-      reports.sort((a, b) => new Date(a.date) - new Date(b.date));
-      break;
-    case 'pages-desc':
-      reports.sort((a, b) => b.pages - a.pages);
-      break;
-    case 'pages-asc':
-      reports.sort((a, b) => a.pages - b.pages);
-      break;
-    case 'title':
-      reports.sort((a, b) => a.title.localeCompare(b.title, 'zh-CN'));
-      break;
-  }
+  const sort = query.sort || '-date';
+  const sortField = sort.replace(/^-/, '');
+  const sortDesc = sort.startsWith('-');
+  
+  reports.sort((a, b) => {
+    let comparison = 0;
+    switch (sortField) {
+      case 'date':
+        comparison = new Date(a.date) - new Date(b.date);
+        break;
+      case 'pages':
+        comparison = a.pages - b.pages;
+        break;
+      case 'title':
+        comparison = a.title.localeCompare(b.title, 'zh-CN');
+        break;
+      default:
+        comparison = new Date(a.date) - new Date(b.date);
+    }
+    return sortDesc ? -comparison : comparison;
+  });
 
   // 分页
   const page = parseInt(query.page) || 1;
   const limit = parseInt(query.limit) || 20;
+  
+  if (page < 1 || limit < 1 || limit > 100) {
+    sendError(
+      res,
+      HTTP_STATUS.BAD_REQUEST,
+      'Bad Request',
+      '分页参数无效: page >= 1, 1 <= limit <= 100'
+    );
+    return;
+  }
+  
   const start = (page - 1) * limit;
   const end = start + limit;
   const paginatedReports = reports.slice(start, end);
-
-  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify({
-    success: true,
+  const totalPages = Math.ceil(reports.length / limit);
+  
+  const responseData = {
     data: paginatedReports,
     meta: {
       total: reports.length,
       page,
       limit,
-      totalPages: Math.ceil(reports.length / limit)
+      totalPages
+    },
+    links: {
+      self: `/reports?page=${page}&limit=${limit}`,
+      first: `/reports?page=1&limit=${limit}`,
+      last: `/reports?page=${totalPages}&limit=${limit}`,
+      ...(page > 1 && { prev: `/reports?page=${page - 1}&limit=${limit}` }),
+      ...(page < totalPages && { next: `/reports?page=${page + 1}&limit=${limit}` })
     }
-  }));
+  };
+  
+  setStandardHeaders(res, { cache: true });
+  res.setHeader('X-Total-Count', reports.length);
+  res.setHeader('X-Page', page);
+  res.setHeader('X-Limit', limit);
+  res.writeHead(HTTP_STATUS.OK);
+  res.end(JSON.stringify(responseData));
 }
 
 /**
- * 获取单个报告详情
+ * GET /reports/:id - 获取单个报告详情
  */
 function getReportById(req, res, reportId) {
+  if (!checkContentNegotiation(req, res)) return;
+  
+  if (!isValidReportId(reportId)) {
+    sendError(
+      res,
+      HTTP_STATUS.BAD_REQUEST,
+      'Bad Request',
+      '报告 ID 格式无效'
+    );
+    return;
+  }
+  
   const reports = loadReports();
   const report = reports.find(r => r.id === reportId);
 
   if (!report) {
-    res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify({ success: false, error: '报告不存在' }));
+    sendError(
+      res,
+      HTTP_STATUS.NOT_FOUND,
+      'Not Found',
+      `报告 ID '${reportId}' 不存在`
+    );
     return;
   }
 
-  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify({ success: true, data: report }));
+  const etag = generateETag(report);
+  
+  if (req.headers['if-none-match'] === `"${etag}"`) {
+    res.writeHead(304);
+    res.end();
+    return;
+  }
+  
+  sendResponse(res, HTTP_STATUS.OK, report, { cache: true, etag });
 }
 
 /**
- * 获取报告内容
+ * GET /reports/:id/sections - 获取报告内容
  */
-function getReportContent(req, res, reportId, query) {
+function getReportSections(req, res, reportId, query) {
+  if (!checkContentNegotiation(req, res)) return;
+  
+  if (!isValidReportId(reportId)) {
+    sendError(
+      res,
+      HTTP_STATUS.BAD_REQUEST,
+      'Bad Request',
+      '报告 ID 格式无效'
+    );
+    return;
+  }
+  
   const manifest = loadManifest(reportId);
 
   if (!manifest) {
-    res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify({ success: false, error: '报告内容不存在' }));
+    sendError(
+      res,
+      HTTP_STATUS.NOT_FOUND,
+      'Not Found',
+      `报告 '${reportId}' 的内容不存在`
+    );
     return;
   }
 
-  const chunkIndex = parseInt(query.chunk) || 0;
-
-  // 如果请求特定块
+  // 请求特定块
   if (query.chunk !== undefined) {
+    const chunkIndex = parseInt(query.chunk);
+    
+    if (isNaN(chunkIndex) || chunkIndex < 0 || chunkIndex >= manifest.totalChunks) {
+      sendError(
+        res,
+        HTTP_STATUS.BAD_REQUEST,
+        'Bad Request',
+        `chunk 参数必须在 0 到 ${manifest.totalChunks - 1} 之间`
+      );
+      return;
+    }
+    
     const chunk = loadContentChunk(reportId, chunkIndex);
     if (!chunk) {
-      res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
-      res.end(JSON.stringify({ success: false, error: '内容块不存在' }));
+      sendError(
+        res,
+        HTTP_STATUS.NOT_FOUND,
+        'Not Found',
+        `内容块 ${chunkIndex} 不存在`
+      );
       return;
     }
 
-    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify({ success: true, data: chunk }));
+    sendResponse(res, HTTP_STATUS.OK, chunk, { cache: true });
     return;
   }
 
@@ -358,39 +537,75 @@ function getReportContent(req, res, reportId, query) {
     }
   }
 
-  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify({
-    success: true,
-    data: {
-      reportId,
-      title: manifest.title,
-      totalPages: manifest.totalPages,
-      totalChunks: manifest.totalChunks,
-      sections: allSections
+  const responseData = {
+    reportId,
+    title: manifest.title,
+    totalPages: manifest.totalPages,
+    totalChunks: manifest.totalChunks,
+    sections: allSections,
+    links: {
+      self: `/reports/${reportId}/sections`,
+      report: `/reports/${reportId}`
     }
-  }));
+  };
+
+  sendResponse(res, HTTP_STATUS.OK, responseData, { cache: true });
 }
 
 /**
- * 获取报告 manifest
+ * GET /reports/:id/manifest - 获取报告清单
  */
 function getReportManifest(req, res, reportId) {
+  if (!checkContentNegotiation(req, res)) return;
+  
+  if (!isValidReportId(reportId)) {
+    sendError(
+      res,
+      HTTP_STATUS.BAD_REQUEST,
+      'Bad Request',
+      '报告 ID 格式无效'
+    );
+    return;
+  }
+  
   const manifest = loadManifest(reportId);
 
   if (!manifest) {
-    res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify({ success: false, error: '报告清单不存在' }));
+    sendError(
+      res,
+      HTTP_STATUS.NOT_FOUND,
+      'Not Found',
+      `报告 '${reportId}' 的清单不存在`
+    );
     return;
   }
 
-  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify({ success: true, data: manifest }));
+  const etag = generateETag(manifest);
+  
+  if (req.headers['if-none-match'] === `"${etag}"`) {
+    res.writeHead(304);
+    res.end();
+    return;
+  }
+  
+  const responseData = {
+    ...manifest,
+    links: {
+      self: `/reports/${reportId}/manifest`,
+      report: `/reports/${reportId}`,
+      sections: `/reports/${reportId}/sections`
+    }
+  };
+  
+  sendResponse(res, HTTP_STATUS.OK, responseData, { cache: true, etag });
 }
 
 /**
- * 获取热门标签
+ * GET /tags - 获取热门标签
  */
-function getHotTags(req, res) {
+function getTags(req, res) {
+  if (!checkContentNegotiation(req, res)) return;
+  
   const reports = loadReports();
   const tagCount = {};
 
@@ -400,19 +615,26 @@ function getHotTags(req, res) {
     });
   });
 
-  const hotTags = Object.entries(tagCount)
+  const tags = Object.entries(tagCount)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 15)
-    .map(([tag, count]) => ({ tag, count }));
+    .map(([name, count]) => ({ 
+      name, 
+      count,
+      links: {
+        reports: `/reports?tag=${encodeURIComponent(name)}`
+      }
+    }));
 
-  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify({ success: true, data: hotTags }));
+  sendResponse(res, HTTP_STATUS.OK, tags, { cache: true });
 }
 
 /**
- * 获取报告来源统计
+ * GET /sources - 获取报告来源统计
  */
 function getSources(req, res) {
+  if (!checkContentNegotiation(req, res)) return;
+  
   const reports = loadReports();
   const sourceCount = {};
 
@@ -421,10 +643,26 @@ function getSources(req, res) {
   });
 
   const sources = Object.entries(sourceCount)
-    .map(([source, count]) => ({ source, count }));
+    .map(([name, count]) => ({ 
+      name, 
+      count,
+      links: {
+        reports: `/reports?source=${encodeURIComponent(name)}`
+      }
+    }));
 
-  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify({ success: true, data: sources }));
+  sendResponse(res, HTTP_STATUS.OK, sources, { cache: true });
+}
+
+/**
+ * GET /health - 健康检查
+ */
+function getHealth(req, res) {
+  sendResponse(res, HTTP_STATUS.OK, {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
 }
 
 /**
@@ -432,58 +670,77 @@ function getSources(req, res) {
  */
 function handleAPIRequest(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
-  const pathname = url.pathname;
+  const pathname = url.pathname.replace(/^\/api/, '') || '/';
   const query = Object.fromEntries(url.searchParams);
 
-  // 设置 CORS 头
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // 只允许 GET、HEAD、OPTIONS 方法
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    res.setHeader('Allow', 'GET, HEAD, OPTIONS');
+    sendError(
+      res,
+      HTTP_STATUS.METHOD_NOT_ALLOWED,
+      'Method Not Allowed',
+      `方法 ${req.method} 不被允许`
+    );
+    return;
+  }
 
+  // 处理 OPTIONS 预检请求
   if (req.method === 'OPTIONS') {
-    res.writeHead(200);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+    res.setHeader('Access-Control-Max-Age', '86400');
+    res.writeHead(HTTP_STATUS.NO_CONTENT);
     res.end();
     return;
   }
 
+  // HEAD 请求处理 - 与 GET 相同但不返回 body
+  const isHead = req.method === 'HEAD';
+
   // 路由匹配
-  if (pathname === '/api/categories') {
-    return getCategories(req, res);
-  }
+  const routes = [
+    { pattern: /^\/$/, handler: getHealth },
+    { pattern: /^\/categories$/, handler: getCategories },
+    { pattern: /^\/reports$/, handler: (req, res) => getReports(req, res, query) },
+    { pattern: /^\/tags$/, handler: getTags },
+    { pattern: /^\/sources$/, handler: getSources },
+    { 
+      pattern: /^\/reports\/([^\/]+)$/, 
+      handler: (req, res, matches) => getReportById(req, res, matches[1]) 
+    },
+    { 
+      pattern: /^\/reports\/([^\/]+)\/sections$/, 
+      handler: (req, res, matches) => getReportSections(req, res, matches[1], query) 
+    },
+    { 
+      pattern: /^\/reports\/([^\/]+)\/manifest$/, 
+      handler: (req, res, matches) => getReportManifest(req, res, matches[1]) 
+    }
+  ];
 
-  if (pathname === '/api/reports') {
-    return getReports(req, res, query);
-  }
-
-  if (pathname === '/api/tags') {
-    return getHotTags(req, res);
-  }
-
-  if (pathname === '/api/sources') {
-    return getSources(req, res);
-  }
-
-  // 报告详情路由 /api/reports/:id
-  const reportDetailMatch = pathname.match(/^\/api\/reports\/([^\/]+)$/);
-  if (reportDetailMatch) {
-    return getReportById(req, res, reportDetailMatch[1]);
-  }
-
-  // 报告内容路由 /api/reports/:id/content
-  const reportContentMatch = pathname.match(/^\/api\/reports\/([^\/]+)\/content$/);
-  if (reportContentMatch) {
-    return getReportContent(req, res, reportContentMatch[1], query);
-  }
-
-  // 报告清单路由 /api/reports/:id/manifest
-  const reportManifestMatch = pathname.match(/^\/api\/reports\/([^\/]+)\/manifest$/);
-  if (reportManifestMatch) {
-    return getReportManifest(req, res, reportManifestMatch[1]);
+  for (const route of routes) {
+    const matches = pathname.match(route.pattern);
+    if (matches) {
+      if (isHead) {
+        const originalEnd = res.end;
+        res.end = function() {
+          return originalEnd.call(this);
+        };
+      }
+      route.handler(req, res, matches);
+      return;
+    }
   }
 
   // 404 - API 端点不存在
-  res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify({ success: false, error: 'API 端点不存在' }));
+  sendError(
+    res,
+    HTTP_STATUS.NOT_FOUND,
+    'Not Found',
+    `API 端点 '${pathname}' 不存在`
+  );
 }
 
 module.exports = { handleAPIRequest };

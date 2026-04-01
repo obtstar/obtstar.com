@@ -339,6 +339,163 @@
 :not([data-theme="dark"]) .theme-toggle .fa-sun { display: block; }
 :not([data-theme="dark"]) .theme-toggle .fa-moon { display: none; }
 
+/* ── 报告详情页暗色模式 ──────────────────────────────── */
+[data-theme="dark"] .detail-hero {
+  background: linear-gradient(160deg, #0F172A 0%, #1E293B 40%, #1E1B4B 100%);
+}
+[data-theme="dark"] .detail-hero-bg {
+  opacity: 0.12;
+}
+[data-theme="dark"] .detail-hero-glow {
+  opacity: 0.2;
+}
+[data-theme="dark"] .detail-section {
+  background: #1E293B;
+  border-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .detail-section-title {
+  color: #F1F5F9;
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .ds-icon {
+  background: linear-gradient(135deg, rgba(79,70,229,0.2), rgba(124,58,237,0.15));
+}
+[data-theme="dark"] .summary-text {
+  color: #CBD5E1;
+}
+[data-theme="dark"] .info-panel {
+  background: #1E293B;
+  border-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .info-panel-item {
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+[data-theme="dark"] .info-panel-label {
+  color: #94A3B8;
+}
+[data-theme="dark"] .info-panel-value {
+  color: #F1F5F9;
+}
+[data-theme="dark"] .report-cover {
+  border: 1px solid rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .cover-content {
+  color: #F1F5F9;
+}
+[data-theme="dark"] .cover-grid {
+  opacity: 0.15;
+}
+[data-theme="dark"] .highlight-item {
+  background: rgba(79,70,229,0.08);
+}
+[data-theme="dark"] .highlight-item:hover {
+  background: rgba(79,70,229,0.15);
+}
+[data-theme="dark"] .chapter-item {
+  background: rgba(30,41,59,0.6);
+  border-color: rgba(255,255,255,0.06);
+}
+[data-theme="dark"] .chapter-item:hover {
+  border-color: rgba(79,70,229,0.4);
+  background: rgba(79,70,229,0.1);
+}
+[data-theme="dark"] .detail-toc .toc-nav {
+  background: #1E293B;
+  border-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .toc-title {
+  color: #94A3B8;
+}
+[data-theme="dark"] .toc-item {
+  color: #CBD5E1;
+}
+[data-theme="dark"] .toc-item:hover {
+  background: rgba(79,70,229,0.15);
+  color: #818CF8;
+}
+[data-theme="dark"] .toc-item.active {
+  background: rgba(79,70,229,0.2);
+  color: #818CF8;
+}
+[data-theme="dark"] .toc-num {
+  color: #64748B;
+}
+[data-theme="dark"] .share-btn {
+  background: rgba(30,41,59,0.8);
+  border-color: rgba(255,255,255,0.1);
+  color: #CBD5E1;
+}
+[data-theme="dark"] .share-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+[data-theme="dark"] .quickStats {
+  background: rgba(30,41,59,0.85);
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .breadcrumb {
+  color: #64748B;
+}
+[data-theme="dark"] .breadcrumb a {
+  color: #64748B;
+}
+[data-theme="dark"] .breadcrumb a:hover {
+  color: #818CF8;
+}
+[data-theme="dark"] .loading-spinner {
+  border-color: rgba(255,255,255,0.1);
+  border-top-color: var(--primary);
+}
+[data-theme="dark"] .error-container {
+  color: #F1F5F9;
+}
+[data-theme="dark"] .section-label {
+  background: rgba(79,70,229,0.15);
+  color: #818CF8;
+}
+
+/* ── 报告详情页按钮优化 ──────────────────────────────── */
+/* Hero 区域的操作按钮 */
+[data-theme="dark"] #heroActions .btn-ghost {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #E2E8F0;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+}
+[data-theme="dark"] #heroActions .btn-ghost:hover {
+  background: rgba(79,70,229,0.25);
+  border-color: rgba(129,140,248,0.5);
+  color: #F1F5F9;
+}
+[data-theme="dark"] #heroActions .btn-ghost i {
+  color: #94A3B8;
+}
+[data-theme="dark"] #heroActions .btn-ghost:hover i {
+  color: #818CF8;
+}
+
+/* ── Footer 暗色模式 ────────────────────────────────── */
+[data-theme="dark"] .footer {
+  background: #0F172A;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="dark"] .footer-logo {
+  background: linear-gradient(135deg, #818CF8, #A78BFA);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+[data-theme="dark"] .footer-bottom {
+  border-top-color: rgba(255,255,255,0.06);
+}
+[data-theme="dark"] .footer-links a {
+  color: rgba(255,255,255,0.5);
+}
+[data-theme="dark"] .footer-links a:hover {
+  color: #818CF8;
+}
+
 /* ── 设计 Token ────────────────────────────────────── */
 :root {
   --primary:       #4F46E5;

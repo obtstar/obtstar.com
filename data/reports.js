@@ -177,12 +177,27 @@ const REPORTS = [
   {
     id: 'prompt-engineering-v7',
     title: 'Prompt Engineering 提示工程',
+    title_i18n: {
+      'zh-CN': 'Prompt Engineering 提示工程',
+      'en': 'Prompt Engineering Guide',
+      'ja': 'プロンプトエンジニアリング ガイド'
+    },
     subtitle: 'Google 提示工程完全指南（中英双语版）v7',
+    subtitle_i18n: {
+      'zh-CN': 'Google 提示工程完全指南（中英双语版）v7',
+      'en': 'Google Prompt Engineering Complete Guide v7',
+      'ja': 'Google プロンプトエンジニアリング 完全ガイド v7'
+    },
     category: 'prompt',
     tags: ['Prompt Engineering', 'CoT', 'Few-shot', 'Google', '工程化'],
     pages: 68,
     date: '2025-12-01',
     summary: 'Google 官方出品的提示工程权威指南中英双语版本，系统覆盖零样本、少样本、思维链、自洽性等核心技术，附工程化实践案例。',
+    summary_i18n: {
+      'zh-CN': 'Google 官方出品的提示工程权威指南中英双语版本，系统覆盖零样本、少样本、思维链、自洽性等核心技术，附工程化实践案例。',
+      'en': 'Official Google guide on prompt engineering, covering zero-shot, few-shot, chain-of-thought, and other core techniques with engineering practices.',
+      'ja': 'Google公式プロンプトエンジニアリングガイド。ゼロショット、few-shot、Chain-of-Thoughtなどのコア技術をカバーし、エンジニアリング実践事例付き。'
+    },
     highlights: [
       'Zero-shot / Few-shot 提示技术对比',
       'Chain-of-Thought (CoT) 深度解析',
@@ -191,6 +206,32 @@ const REPORTS = [
       'ReAct：推理与行动结合模式',
       '生产环境 Prompt 工程化最佳实践',
     ],
+    highlights_i18n: {
+      'zh-CN': [
+        'Zero-shot / Few-shot 提示技术对比',
+        'Chain-of-Thought (CoT) 深度解析',
+        '自洽性 (Self-Consistency) 采样策略',
+        'Tree of Thoughts 树状思维框架',
+        'ReAct：推理与行动结合模式',
+        '生产环境 Prompt 工程化最佳实践',
+      ],
+      'en': [
+        'Zero-shot vs Few-shot prompting techniques',
+        'Chain-of-Thought (CoT) deep dive',
+        'Self-Consistency sampling strategy',
+        'Tree of Thoughts framework',
+        'ReAct: Combining reasoning and action',
+        'Production-grade prompt engineering best practices',
+      ],
+      'ja': [
+        'ゼロショットとフェーショットのプロンプト技術比較',
+        'Chain-of-Thought (CoT) の深掘り',
+        '自己整合性（Self-Consistency）サンプリング戦略',
+        'Tree of Thoughts フレームワーク',
+        'ReAct：推論と行動の統合',
+        '本番環境プロンプトエンジニアリングのベストプラクティス',
+      ]
+    },
     chapters: [
       { title: '第一章：提示工程基础', desc: 'LLM工作原理与提示基本概念' },
       { title: '第二章：基础提示技术', desc: 'Zero-shot、Few-shot、Instruction Prompting' },
@@ -198,14 +239,37 @@ const REPORTS = [
       { title: '第四章：代码与结构化输出', desc: '代码生成与JSON/Markdown结构化提示' },
       { title: '第五章：工程化实践', desc: '生产环境的Prompt管理与优化' },
     ],
+    chapters_i18n: {
+      'zh-CN': [
+        { title: '第一章：提示工程基础', desc: 'LLM工作原理与提示基本概念' },
+        { title: '第二章：基础提示技术', desc: 'Zero-shot、Few-shot、Instruction Prompting' },
+        { title: '第三章：高级推理技术', desc: 'CoT、ToT、Self-Consistency' },
+        { title: '第四章：代码与结构化输出', desc: '代码生成与JSON/Markdown结构化提示' },
+        { title: '第五章：工程化实践', desc: '生产环境的Prompt管理与优化' },
+      ],
+      'en': [
+        { title: 'Chapter 1: Prompt Engineering Basics', desc: 'LLM fundamentals and basic prompt concepts' },
+        { title: 'Chapter 2: Basic Prompting Techniques', desc: 'Zero-shot, Few-shot, Instruction Prompting' },
+        { title: 'Chapter 3: Advanced Reasoning', desc: 'CoT, ToT, Self-Consistency' },
+        { title: 'Chapter 4: Code & Structured Output', desc: 'Code generation and JSON/Markdown prompts' },
+        { title: 'Chapter 5: Engineering Practices', desc: 'Production prompt management and optimization' },
+      ],
+      'ja': [
+        { title: '第1章：プロンプトエンジニアリングの基礎', desc: 'LLMの仕組みとプロンプトの基本概念' },
+        { title: '第2章：基本的なプロンプト技術', desc: 'ゼロショット、フェショット、インstruuctionプロンプティング' },
+        { title: '第3章：高度な推論技術', desc: 'CoT、ToT、Self-Consistency' },
+        { title: '第4章：コードと構造化出力', desc: 'コード生成とJSON/Markdown構造化プロンプト' },
+        { title: '第5章：エンジニアリング実践', desc: '本番環境のプロンプト管理与最適化' },
+      ]
+    },
     // 多语言支持配置
     multilingual: {
       enabled: true,
-      default: 'zh',
+      default: 'zh-CN',
       languages: [
-        { code: 'zh', name: '中文', nameEn: 'Chinese' },
+        { code: 'zh-CN', name: '中文', nameEn: 'Chinese' },
         { code: 'en', name: 'English', nameEn: 'English' },
-        { code: 'bilingual', name: '中英双语', nameEn: 'Bilingual' }
+        { code: 'ja', name: '日本語', nameEn: 'Japanese' }
       ]
     },
     featured: true,

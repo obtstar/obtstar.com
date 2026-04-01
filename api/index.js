@@ -468,7 +468,7 @@ function getReportById(req, res, reportId) {
     return;
   }
   
-  sendResponse(res, HTTP_STATUS.OK, report, { cache: true, etag });
+  sendResponse(res, HTTP_STATUS.OK, { data: report }, { cache: true, etag });
 }
 
 /**

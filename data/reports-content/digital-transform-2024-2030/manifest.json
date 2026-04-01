@@ -1,0 +1,22 @@
+{
+  "id": "digital-transform-2024-2030",
+  "title": "个人与小微企业数字化转型",
+  "totalPages": 34,
+  "totalChunks": 2,
+  "chunks": [
+    {
+      "index": 0,
+      "file": "chunk-0.js",
+      "sections": ["摘要", "现状分析"],
+      "pageRange": "1-15",
+      "size": "约10KB"
+    },
+    {
+      "index": 1,
+      "file": "chunk-1.js",
+      "sections": ["转型路径", "工具选型", "实施建议"],
+      "pageRange": "16-34",
+      "size": "约12KB"
+    }
+  ]
+}

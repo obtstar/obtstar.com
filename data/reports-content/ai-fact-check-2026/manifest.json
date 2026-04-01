@@ -1,0 +1,29 @@
+{
+  "id": "ai-fact-check-2026",
+  "title": "AI时代的信息质量保障",
+  "totalPages": 56,
+  "totalChunks": 3,
+  "chunks": [
+    {
+      "index": 0,
+      "file": "chunk-0.js",
+      "sections": ["摘要", "1. 引言"],
+      "pageRange": "1-10",
+      "size": "约15KB"
+    },
+    {
+      "index": 1,
+      "file": "chunk-1.js",
+      "sections": ["2. 方法论框架", "3. 核心流程一", "4. 核心流程二"],
+      "pageRange": "11-30",
+      "size": "约20KB"
+    },
+    {
+      "index": 2,
+      "file": "chunk-2.js",
+      "sections": ["5. 核心流程三", "6. 支撑体系", "7. 关键领域", "8. 关联案例", "9. 核心观点", "10. 风险评估", "11. 总结与展望"],
+      "pageRange": "31-56",
+      "size": "约18KB"
+    }
+  ]
+}

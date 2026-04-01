@@ -1,0 +1,22 @@
+{
+  "id": "prompt-engineering-v7",
+  "title": "Prompt Engineering 提示工程",
+  "totalPages": 68,
+  "totalChunks": 2,
+  "chunks": [
+    {
+      "index": 0,
+      "file": "chunk-0.js",
+      "sections": ["目录与介绍", "提示工程基础", "输出配置"],
+      "pageRange": "1-30",
+      "size": "约15KB"
+    },
+    {
+      "index": 1,
+      "file": "chunk-1.js",
+      "sections": ["提示技术", "代码提示", "多模态提示", "最佳实践"],
+      "pageRange": "31-68",
+      "size": "约18KB"
+    }
+  ]
+}

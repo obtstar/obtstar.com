@@ -103,15 +103,14 @@
       background: rgba(79,70,229,0.1);
       color: var(--reader-accent);
     }
-    .reader-btn.active {
-      background: var(--reader-accent);
-      color: white;
-    }
 
+    /* 阅读进度条 */
     .reader-progress-bar {
       position: fixed;
-      top: 56px; left: 0; right: 0;
-      height: 3px;
+      top: 56px;
+      left: 0;
+      right: 0;
+      height: 2px;
       background: var(--reader-border);
       z-index: 99;
     }
@@ -119,82 +118,80 @@
       height: 100%;
       background: linear-gradient(90deg, #4F46E5, #7C3AED);
       width: 0%;
-      transition: width 0.2s ease;
+      transition: width 0.1s ease;
     }
 
-    /* 主布局 */
+    /* 主内容区 */
     .reader-main {
       display: flex;
-      margin-top: 56px;
-      min-height: calc(100vh - 56px);
+      min-height: 100vh;
+      padding-top: 56px;
     }
 
-    /* 左侧边栏 - 目录 */
+    /* 左侧边栏 */
     .reader-sidebar {
       position: fixed;
-      top: 56px; left: 0;
+      left: 0;
+      top: 56px;
+      bottom: 0;
       width: var(--reader-sidebar-w);
-      height: calc(100vh - 56px);
-      background: white;
+      background: var(--reader-bg);
       border-right: 1px solid var(--reader-border);
       overflow-y: auto;
-      transform: translateX(0);
-      transition: transform 0.3s ease;
       z-index: 50;
-    }
-    .theme-dark .reader-sidebar {
-      background: #1F2937;
+      transition: transform 0.3s ease;
     }
 
     .reader-sidebar-header {
-      padding: 1.25rem;
-      border-bottom: 1px solid var(--reader-border);
-      font-size: 0.8125rem;
+      padding: 1.25rem 1.5rem;
       font-weight: 600;
-      color: var(--reader-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      font-size: 0.9375rem;
+      color: var(--reader-text);
+      border-bottom: 1px solid var(--reader-border);
+      position: sticky;
+      top: 0;
+      background: var(--reader-bg);
+      z-index: 2;
     }
 
     .reader-toc {
-      padding: 0.75rem;
+      padding: 0.75rem 0;
     }
 
     .reader-toc-item {
-      display: block;
-      padding: 0.625rem 1rem;
-      border-radius: 8px;
+      padding: 0.625rem 1.5rem;
       font-size: 0.875rem;
-      color: var(--reader-text);
+      color: var(--reader-muted);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       border-left: 3px solid transparent;
     }
     .reader-toc-item:hover {
-      background: rgba(79,70,229,0.08);
+      background: rgba(79,70,229,0.05);
+      color: var(--reader-text);
     }
     .reader-toc-item.active {
-      background: rgba(79,70,229,0.12);
-      border-left-color: var(--reader-accent);
+      background: rgba(79,70,229,0.1);
       color: var(--reader-accent);
-      font-weight: 600;
+      border-left-color: var(--reader-accent);
+      font-weight: 500;
     }
     .reader-toc-item.lv2 {
-      padding-left: 1.75rem;
+      padding-left: 2.25rem;
       font-size: 0.8125rem;
     }
     .reader-toc-item.lv3 {
-      padding-left: 2.5rem;
-      font-size: 0.8125rem;
+      padding-left: 3rem;
+      font-size: 0.75rem;
     }
 
-    /* 中间内容区 */
+    /* 中间内容 */
     .reader-content-wrapper {
       flex: 1;
       margin-left: var(--reader-sidebar-w);
+      padding: 2.5rem 2rem;
       display: flex;
       justify-content: center;
-      padding: 2.5rem 2rem;
     }
 
     .reader-content {
@@ -311,16 +308,13 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.75rem 1.25rem;
-      border-radius: 10px;
       border: 1px solid var(--reader-border);
-      background: white;
+      border-radius: 8px;
+      background: var(--reader-bg);
       color: var(--reader-text);
       font-size: 0.9375rem;
       cursor: pointer;
       transition: all 0.2s ease;
-    }
-    .theme-dark .reader-page-btn {
-      background: #1F2937;
     }
     .reader-page-btn:hover:not(:disabled) {
       border-color: var(--reader-accent);
@@ -336,36 +330,28 @@
       color: var(--reader-muted);
     }
 
-    /* 响应式设计 */
-    
-    /* 手机 (< 640px) */
-    @media (max-width: 639px) {
+    /* 响应式 */
+    @media (max-width: 1023px) {
       :root {
         --reader-sidebar-w: 0px;
       }
       
-      .reader-header {
-        padding: 0 1rem;
+      .reader-sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+      }
+      .reader-sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .reader-content-wrapper {
+        margin-left: 0;
+        padding: 2rem 1.5rem;
       }
       
       .reader-title {
         max-width: 120px;
-      }
-      
-      .reader-content-wrapper {
-        padding: 1.5rem 1rem;
-      }
-      
-      .reader-article {
-        font-size: 1rem;
-      }
-      
-      .reader-article h1 {
-        font-size: 1.375rem;
-      }
-      
-      .reader-article h2 {
-        font-size: 1.125rem;
       }
       
       .reader-progress-indicator {
@@ -383,66 +369,11 @@
       }
     }
 
-    /* 平板竖屏 (640px - 768px) */
-    @media (min-width: 640px) and (max-width: 767px) {
-      :root {
-        --reader-sidebar-w: 0px;
-      }
-      
-      .reader-content-wrapper {
-        padding: 2rem 1.5rem;
-      }
-    }
-
-    /* 平板横屏 / 小笔记本 (768px - 1024px) */
-    @media (min-width: 768px) and (max-width: 1023px) {
-      :root {
-        --reader-sidebar-w: 220px;
-        --reader-content-max: 600px;
-      }
-    }
-
-    /* 小平板横屏 / 大平板 (1024px - 1280px) */
-    @media (min-width: 1024px) and (max-width: 1279px) {
-      :root {
-        --reader-sidebar-w: 260px;
-        --reader-content-max: 680px;
-      }
-    }
-
-    /* 桌面 (1280px - 1536px) */
-    @media (min-width: 1280px) and (max-width: 1535px) {
-      :root {
-        --reader-sidebar-w: 300px;
-        --reader-content-max: 720px;
-      }
-    }
-
-    /* 会议投影模式 (>= 1920px) */
-    @media (min-width: 1920px) {
-      :root {
-        --reader-sidebar-w: 340px;
-        --reader-content-max: 900px;
-      }
-      
-      .reader-article {
-        font-size: 1.25rem;
-      }
-      
-      .reader-article h1 {
-        font-size: 2.25rem;
-      }
-      
-      .reader-article h2 {
-        font-size: 1.625rem;
-      }
-    }
-
     /* 边栏切换按钮（移动端） */
     .sidebar-toggle {
       display: none;
     }
-    @media (max-width: 767px) {
+    @media (max-width: 1023px) {
       .sidebar-toggle {
         display: flex;
       }
@@ -471,6 +402,217 @@
     @keyframes spin {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
+    }
+
+    /* 分块加载指示器 */
+    .chunk-loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--reader-muted);
+    }
+    .chunk-loading i {
+      animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+    }
+
+    /* 图表样式 */
+    .chart-container {
+      background: var(--reader-bg);
+      border: 1px solid var(--reader-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      page-break-inside: avoid;
+    }
+    
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--reader-text);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    .chart-caption {
+      font-size: 0.875rem;
+      color: var(--reader-muted);
+      text-align: center;
+      margin-top: 1rem;
+      font-style: italic;
+    }
+    
+    /* 风险等级条形图 */
+    .risk-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .risk-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5rem 0;
+    }
+    
+    .risk-bar::before {
+      content: '';
+      width: var(--value);
+      height: 24px;
+      background: var(--color);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    
+    .risk-label {
+      min-width: 80px;
+      font-weight: 500;
+      color: var(--reader-text);
+    }
+    
+    .risk-value {
+      font-weight: 700;
+      color: var(--color);
+      min-width: 50px;
+    }
+    
+    /* 饼图样式 */
+    .pie-chart {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--color1) var(--slice1),
+        var(--color2) var(--slice1) var(--slice2),
+        var(--color3) var(--slice2) var(--slice3),
+        var(--color4) var(--slice3)
+      );
+      position: relative;
+    }
+    
+    .pie-chart::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      background: var(--reader-bg);
+      border-radius: 50%;
+    }
+    
+    .pie-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .pie-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .pie-legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+    
+    /* 流程图样式 */
+    .flow-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    
+    .flow-step {
+      background: linear-gradient(135deg, var(--reader-accent), #7C3AED);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-align: center;
+      min-width: 200px;
+      font-weight: 500;
+    }
+    
+    .flow-arrow {
+      color: var(--reader-muted);
+      font-size: 1.5rem;
+    }
+    
+    /* 数据表格样式 */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9375rem;
+    }
+    
+    .data-table th,
+    .data-table td {
+      border: 1px solid var(--reader-border);
+      padding: 0.75rem;
+      text-align: left;
+    }
+    
+    .data-table th {
+      background: var(--reader-accent);
+      color: white;
+      font-weight: 600;
+    }
+    
+    .data-table tr:nth-child(even) {
+      background: rgba(79, 70, 229, 0.05);
+    }
+    
+    /* 打印样式 */
+    @media print {
+      .reader-header,
+      .reader-sidebar,
+      .reader-progress-indicator,
+      .reader-pagination,
+      .reader-progress-bar {
+        display: none !important;
+      }
+      
+      .reader-main {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      
+      .reader-content-wrapper {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      
+      .reader-article {
+        font-size: 11pt !important;
+        line-height: 1.6 !important;
+      }
+      
+      .chart-container {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        border: 1px solid #ccc;
+      }
+      
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      
+      h1, h2, h3 {
+        color: black !important;
+        break-after: avoid;
+        page-break-after: avoid;
+      }
     }
   </style>
 </head>
@@ -530,6 +672,12 @@
           <!-- 由 JS 填充 -->
         </div>
         
+        <!-- 分块加载指示器 -->
+        <div class="chunk-loading" id="chunkLoading" style="display:none">
+          <i class="fas fa-spinner"></i>
+          <span>正在加载更多内容...</span>
+        </div>
+        
         <!-- 分页导航 -->
         <div class="reader-pagination" id="pagination" style="display:none">
           <button class="reader-page-btn" id="prevBtn" onclick="changePage(-1)">
@@ -551,59 +699,199 @@
 
   <!-- 数据文件 -->
   <script src="data/reports.js"></script>
-  <script src="data/report-contents.js"></script>
   
   <script>
     // 获取URL参数
     const urlParams = new URLSearchParams(window.location.search);
     const reportId = urlParams.get('id') || 'report-001';
     const report = REPORTS.find(r => r.id === reportId) || REPORTS[0];
-    const content = REPORT_CONTENTS[reportId];
-
+    
+    // 报告数据管理
+    let reportManifest = null;  // 报告清单
+    let loadedChunks = {};      // 已加载的分块
+    let allSections = [];       // 所有章节（合并后）
+    
     // 状态变量
     let currentPage = 1;
     let currentSection = 0;
     const sectionsPerPage = 3;
     let isDark = false;
-    let fontLevel = 1; // 0: small, 1: medium, 2: large
+    let fontLevel = 1;
+    let totalChunks = 0;
 
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
       init();
     });
 
-    function init() {
+    async function init() {
       // 设置标题
       document.title = `${report.title} - 阅读模式`;
       document.getElementById('reportTitle').textContent = report.title;
 
-      // 加载内容
-      if (content && content.sections) {
+      // 检查是否需要自动打印
+      const shouldPrint = urlParams.get('print') === '1';
+
+      // 加载报告清单
+      reportManifest = await loadManifest(reportId);
+      
+      if (!reportManifest) {
+        showNoContent();
+        return;
+      }
+
+      totalChunks = reportManifest.totalChunks;
+      
+      // 先加载第一块内容（包含摘要和前几章）
+      const firstChunk = await loadChunk(reportId, 0);
+      if (firstChunk) {
+        loadedChunks[0] = firstChunk;
+        allSections = [...firstChunk.sections];
+        
         renderTOC();
         renderProgressIndicator();
         renderPage(1);
+        
+        // 如果需要打印，预加载所有内容后触发打印
+        if (shouldPrint) {
+          await preloadAllChunks();
+          setTimeout(() => {
+            window.print();
+          }, 1500);
+        }
       } else {
-        document.getElementById('loading').innerHTML = `
-          <i class="fas fa-exclamation-circle"></i>
-          <p>暂无完整内容</p>
-          <button class="reader-page-btn" style="margin-top:1rem" onclick="goBack()">
-            返回报告详情
-          </button>
-        `;
+        showNoContent();
       }
 
       // 滚动监听
       window.addEventListener('scroll', updateProgress);
     }
 
+    // 预加载所有分块（用于打印）
+    async function preloadAllChunks() {
+      for (let i = 1; i < totalChunks; i++) {
+        const chunk = await loadChunk(reportId, i);
+        if (chunk) {
+          mergeSections(chunk);
+        }
+      }
+      // 重新渲染以显示所有内容
+      renderPage(1);
+    }
+
+    // 加载报告清单
+    async function loadManifest(reportId) {
+      try {
+        const response = await fetch(`data/reports-content/${reportId}/manifest.json`);
+        if (!response.ok) return null;
+        return await response.json();
+      } catch (error) {
+        console.error('加载清单失败:', error);
+        return null;
+      }
+    }
+
+    // 加载指定分块
+    async function loadChunk(reportId, chunkIndex) {
+      // 检查是否已加载
+      if (loadedChunks[chunkIndex]) {
+        return loadedChunks[chunkIndex];
+      }
+      
+      try {
+        const response = await fetch(`data/reports-content/${reportId}/chunk-${chunkIndex}.js`);
+        if (!response.ok) return null;
+        
+        const jsCode = await response.text();
+        
+        // 执行JS代码
+        const script = document.createElement('script');
+        script.textContent = jsCode;
+        document.head.appendChild(script);
+        
+        // 获取内容
+        const chunkKey = `REPORT_CHUNK_${reportId.replace(/-/g, '_')}_${chunkIndex}`;
+        const chunk = window[chunkKey];
+        
+        if (chunk) {
+          loadedChunks[chunkIndex] = chunk;
+          return chunk;
+        }
+        return null;
+      } catch (error) {
+        console.error(`加载分块 ${chunkIndex} 失败:`, error);
+        return null;
+      }
+    }
+
+    // 确保指定范围的章节已加载
+    async function ensureSectionsLoaded(sectionIndex) {
+      if (!reportManifest) return;
+      
+      // 计算需要加载的分块
+      const sectionsPerChunk = Math.ceil(allSections.length / totalChunks);
+      const targetChunk = Math.floor(sectionIndex / sectionsPerChunk);
+      
+      // 加载目标分块及其相邻分块（预加载）
+      const chunksToLoad = [targetChunk];
+      if (targetChunk > 0) chunksToLoad.push(targetChunk - 1);
+      if (targetChunk < totalChunks - 1) chunksToLoad.push(targetChunk + 1);
+      
+      for (const chunkIdx of chunksToLoad) {
+        if (!loadedChunks[chunkIdx]) {
+          showChunkLoading();
+          const chunk = await loadChunk(reportId, chunkIdx);
+          if (chunk) {
+            // 合并章节
+            mergeSections(chunk);
+          }
+          hideChunkLoading();
+        }
+      }
+    }
+
+    // 合并章节（保持顺序）
+    function mergeSections(chunk) {
+      // 根据chunkIndex确定插入位置
+      const existingIds = new Set(allSections.map(s => s.title));
+      
+      for (const section of chunk.sections) {
+        if (!existingIds.has(section.title)) {
+          allSections.push(section);
+          existingIds.add(section.title);
+        }
+      }
+      
+      // 重新渲染目录
+      renderTOC();
+    }
+
+    // 显示分块加载状态
+    function showChunkLoading() {
+      document.getElementById('chunkLoading').style.display = 'block';
+    }
+
+    function hideChunkLoading() {
+      document.getElementById('chunkLoading').style.display = 'none';
+    }
+
+    // 显示无内容
+    function showNoContent() {
+      document.getElementById('loading').innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        <p>暂无完整内容</p>
+        <button class="reader-page-btn" style="margin-top:1rem" onclick="goBack()">
+          返回报告详情
+        </button>
+      `;
+    }
+
     // 渲染目录
     function renderTOC() {
-      if (!content || !content.sections) return;
-      
       const toc = document.getElementById('tocList');
       let html = '';
       
-      content.sections.forEach((section, idx) => {
+      allSections.forEach((section, idx) => {
         const levelClass = section.level === 1 ? '' : (section.level === 2 ? 'lv2' : 'lv3');
         html += `<div class="reader-toc-item ${levelClass}" onclick="scrollToSection(${idx})" data-idx="${idx}">${section.title}</div>`;
       });
@@ -613,11 +901,8 @@
 
     // 渲染右侧进度点
     function renderProgressIndicator() {
-      if (!content || !content.sections) return;
-      
       const indicator = document.getElementById('progressIndicator');
-      const totalSections = content.sections.length;
-      const totalPages = Math.ceil(totalSections / sectionsPerPage);
+      const totalPages = Math.ceil(allSections.length / sectionsPerPage);
       
       let html = '';
       for (let i = 0; i < totalPages; i++) {
@@ -629,17 +914,16 @@
     }
 
     // 渲染当前页
-    function renderPage(page) {
+    async function renderPage(page) {
       currentPage = page;
       
-      if (!content || !content.sections) return;
-      
-      const sections = content.sections;
-      const totalPages = Math.ceil(sections.length / sectionsPerPage);
-      
       const startIdx = (page - 1) * sectionsPerPage;
-      const endIdx = Math.min(startIdx + sectionsPerPage, sections.length);
-      const pageSections = sections.slice(startIdx, endIdx);
+      const endIdx = Math.min(startIdx + sectionsPerPage, allSections.length);
+      
+      // 确保需要的章节已加载
+      await ensureSectionsLoaded(endIdx - 1);
+      
+      const pageSections = allSections.slice(startIdx, endIdx);
       
       // 更新文章内容
       const article = document.getElementById('articleBody');
@@ -648,8 +932,8 @@
       pageSections.forEach(section => {
         const tag = section.level === 1 ? 'h2' : 'h3';
         html += `
-          <${tag} id="section-${currentSection + pageSections.indexOf(section)}">${section.title}</${tag}>
-          ${formatContent(section.content)}
+          <${tag} id="section-${startIdx + pageSections.indexOf(section)}">${section.title}</${tag}>
+          ${section.content}
         `;
       });
       
@@ -659,6 +943,7 @@
       document.getElementById('pagination').style.display = 'flex';
       
       // 更新分页信息
+      const totalPages = Math.ceil(allSections.length / sectionsPerPage);
       document.getElementById('pageInfo').textContent = `${page} / ${totalPages}`;
       document.getElementById('prevBtn').disabled = page === 1;
       document.getElementById('nextBtn').disabled = page === totalPages;
@@ -668,144 +953,40 @@
       
       // 更新目录选中状态
       updateTOCHighlight();
+      
+      // 滚动到顶部
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 格式化内容
-    function formatContent(text) {
-      if (!text) return '';
-      
-      let html = text;
-      
-      // 处理表格
-      if (html.includes('|')) {
-        const lines = html.split('\n');
-        let tableHtml = '';
-        let inTable = false;
-        
-        lines.forEach((line, idx) => {
-          if (line.includes('|') && line.trim().startsWith('|')) {
-            if (!inTable) {
-              tableHtml += '<table>';
-              inTable = true;
-            }
-            
-            const cells = line.split('|').filter(c => c.trim());
-            const isHeader = idx === 0 || line.includes('---');
-            
-            if (isHeader && idx === 0) {
-              tableHtml += '<thead><tr>';
-              cells.forEach(cell => {
-                tableHtml += `<th>${cell.trim()}</th>`;
-              });
-              tableHtml += '</tr></thead><tbody>';
-            } else if (!line.includes('---')) {
-              tableHtml += '<tr>';
-              cells.forEach(cell => {
-                tableHtml += `<td>${cell.trim()}</td>`;
-              });
-              tableHtml += '</tr>';
-            }
-          } else {
-            if (inTable) {
-              tableHtml += '</tbody></table>';
-              inTable = false;
-            }
-            if (line.trim()) {
-              // 检查是否包含列表项
-              if (line.trim().startsWith('•') || line.trim().startsWith('·')) {
-                const items = line.split('\n').filter(l => l.trim().startsWith('•') || l.trim().startsWith('·'));
-                if (items.length > 0) {
-                  tableHtml += '<ul>';
-                  items.forEach(item => {
-                    tableHtml += `<li>${item.replace(/^[•·]\s*/, '')}</li>`;
-                  });
-                  tableHtml += '</ul>';
-                }
-              } else {
-                tableHtml += `<p>${line}</p>`;
-              }
-            }
-          }
-        });
-        
-        if (inTable) {
-          tableHtml += '</tbody></table>';
-        }
-        
-        if (tableHtml.includes('<th>')) {
-          html = tableHtml;
-        }
-      }
-      
-      // 处理列表项
-      if (!html.includes('<ul>') && (html.includes('•') || html.includes('·'))) {
-        const lines = html.split('\n');
-        let listHtml = '';
-        let inList = false;
-        
-        lines.forEach(line => {
-          if (line.trim().startsWith('•') || line.trim().startsWith('·')) {
-            if (!inList) {
-              listHtml += '<ul>';
-              inList = true;
-            }
-            listHtml += `<li>${line.replace(/^[•·]\s*/, '')}</li>`;
-          } else {
-            if (inList) {
-              listHtml += '</ul>';
-              inList = false;
-            }
-            if (line.trim() && !line.includes('<table>')) {
-              listHtml += `<p>${line}</p>`;
-            }
-          }
-        });
-        
-        if (inList) {
-          listHtml += '</ul>';
-        }
-        
-        if (listHtml && !html.includes('<ul>')) {
-          html = listHtml;
-        }
-      }
-      
-      // 处理段落
-      if (!html.includes('<ul>') && !html.includes('<table>') && !html.includes('<p>')) {
-        html = html.split('\n\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
-      }
-      
-      return html;
-    }
-
-    // 切换页码
-    function changePage(delta) {
-      if (!content || !content.sections) return;
-      
-      const totalPages = Math.ceil(content.sections.length / sectionsPerPage);
-      const newPage = currentPage + delta;
+    // 切换页面
+    async function changePage(direction) {
+      const totalPages = Math.ceil(allSections.length / sectionsPerPage);
+      const newPage = currentPage + direction;
       
       if (newPage >= 1 && newPage <= totalPages) {
-        renderPage(newPage);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        await renderPage(newPage);
       }
     }
 
     // 跳转到指定页
-    function goToPage(page) {
-      renderPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    async function goToPage(page) {
+      await renderPage(page);
     }
 
     // 滚动到指定章节
-    function scrollToSection(idx) {
+    async function scrollToSection(idx) {
+      // 确保章节已加载
+      await ensureSectionsLoaded(idx);
+      
       const el = document.getElementById(`section-${idx}`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         // 更新当前页
         const page = Math.floor(idx / sectionsPerPage) + 1;
         if (page !== currentPage) {
-          renderPage(page);
+          currentPage = page;
+          updateProgressDots(page);
+          updateTOCHighlight();
         }
       }
     }
@@ -831,7 +1012,7 @@
     function updateTOCHighlight() {
       const items = document.querySelectorAll('.reader-toc-item');
       const startIdx = (currentPage - 1) * sectionsPerPage;
-      const endIdx = Math.min(startIdx + sectionsPerPage, content.sections.length);
+      const endIdx = Math.min(startIdx + sectionsPerPage, allSections.length);
       
       items.forEach((item, idx) => {
         item.classList.toggle('active', idx >= startIdx && idx < endIdx);
@@ -841,9 +1022,7 @@
     // 切换边栏（移动端）
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
-      sidebar.style.transform = sidebar.style.transform === 'translateX(-100%)' 
-        ? 'translateX(0)' 
-        : 'translateX(-100%)';
+      sidebar.classList.toggle('open');
     }
 
     // 切换主题

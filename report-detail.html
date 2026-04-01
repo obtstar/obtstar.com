@@ -372,6 +372,201 @@
         font-size: 1.0625rem;
       }
     }
+
+    /* 打印内容区域样式 */
+    .print-content-area {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 9999;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+    
+    .print-loading {
+      text-align: center;
+      padding: 4rem;
+      font-size: 1.125rem;
+      color: #6B7280;
+    }
+    
+    .print-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid #E5E7EB;
+    }
+    
+    .print-header h1 {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+      color: #1F2937;
+    }
+    
+    .print-subtitle {
+      font-size: 1.125rem;
+      color: #4B5563;
+      margin-bottom: 0.5rem;
+    }
+    
+    .print-meta {
+      font-size: 0.875rem;
+      color: #6B7280;
+    }
+    
+    .print-body {
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 11pt;
+      line-height: 1.7;
+      color: #1F2937;
+    }
+    
+    .print-body h2 {
+      font-size: 1.375rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: #1F2937;
+      break-after: avoid;
+    }
+    
+    .print-body h3 {
+      font-size: 1.125rem;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: #374151;
+      break-after: avoid;
+    }
+    
+    .print-body p {
+      margin-bottom: 0.75rem;
+    }
+    
+    .print-body ul, .print-body ol {
+      margin-bottom: 0.75rem;
+      padding-left: 1.5rem;
+    }
+    
+    .print-body li {
+      margin-bottom: 0.25rem;
+    }
+    
+    /* 打印时隐藏页面元素 */
+    @media print {
+      body > *:not(.print-content-area) {
+        display: none !important;
+      }
+      
+      .print-content-area {
+        display: block !important;
+        position: static !important;
+        overflow: visible !important;
+        padding: 0 !important;
+      }
+      
+      .print-body {
+        max-width: 100% !important;
+      }
+      
+      /* 图表打印样式 */
+      .chart-container {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        border: 1px solid #ccc !important;
+        margin: 1rem 0 !important;
+      }
+      
+      .flow-step {
+        background: #4F46E5 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      
+      .risk-bar::before {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    /* 语言切换器样式 */
+    .lang-switcher {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-title);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .lang-btn:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .lang-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 0.5rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      min-width: 150px;
+      display: none;
+      z-index: 100;
+    }
+    
+    .lang-menu.active {
+      display: block;
+    }
+    
+    .lang-option {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      background: none;
+      border: none;
+      font-size: 0.9375rem;
+      color: var(--text-body);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    
+    .lang-option:hover {
+      background: #F3F4F6;
+    }
+    
+    .lang-option.active {
+      background: #EEF2FF;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    
+    .lang-option:first-child {
+      border-radius: 8px 8px 0 0;
+    }
+    
+    .lang-option:last-child {
+      border-radius: 0 0 8px 8px;
+    }
   </style>
 </head>
 <body class="page-body">
@@ -412,6 +607,12 @@
           <div id="heroTags" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:2rem"></div>
           <div style="display:flex;gap:1rem;flex-wrap:wrap">
             <button onclick="copyLink()" class="btn btn-primary"><i class="fa fa-share-alt"></i> 分享报告</button>
+            <div id="langSwitcher" class="lang-switcher" style="display:none">
+              <button class="lang-btn" onclick="toggleLangMenu()">
+                <i class="fa fa-globe"></i> <span id="currentLang">中文</span> <i class="fa fa-chevron-down"></i>
+              </button>
+              <div id="langMenu" class="lang-menu"></div>
+            </div>
             <a id="readerModeBtn" href="reader.html" class="btn btn-ghost"><i class="fa fa-book-reader"></i> 进入阅读模式</a>
             <a href="reports.html" class="btn btn-ghost"><i class="fa fa-arrow-left"></i> 返回列表</a>
           </div>
@@ -501,36 +702,6 @@
             </div>
           </div>
 
-          <!-- 完整报告阅读 -->
-          <div class="full-report-section" data-aos="fade-up">
-            <div class="full-report-header">
-              <div class="full-report-title">
-                <span class="ds-icon">📖</span> 阅读完整报告
-              </div>
-              <button class="full-report-toggle" id="fullReportBtn" onclick="toggleFullReport()">
-                <i class="fa fa-book-open"></i> 点击展开阅读
-              </button>
-            </div>
-            <div class="full-content-wrapper" id="fullContentWrapper">
-              <div class="content-loading" id="contentLoading">
-                <i class="fa fa-spinner fa-spin"></i>
-                <p>正在加载报告内容...</p>
-              </div>
-              <div id="fullContentBody" style="display:none">
-                <!-- 内容由 JS 填充 -->
-              </div>
-              <div class="content-pagination" id="contentPagination" style="display:none">
-                <button class="page-btn" id="prevPageBtn" onclick="changePage(-1)">
-                  <i class="fa fa-chevron-left"></i>
-                </button>
-                <span class="page-info" id="pageInfo">1 / 1</span>
-                <button class="page-btn" id="nextPageBtn" onclick="changePage(1)">
-                  <i class="fa fa-chevron-right"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
           <!-- 分享 -->
           <div class="detail-section" data-aos="fade-up">
             <div class="detail-section-title">
@@ -539,7 +710,7 @@
             <div class="share-bar">
               <button class="share-btn" onclick="copyLink()"><i class="fa fa-link"></i> 复制链接</button>
               <button class="share-btn" onclick="shareTwitter()"><i class="fab fa-twitter"></i> Twitter</button>
-              <button class="share-btn" onclick="window.print()"><i class="fa fa-print"></i> 打印</button>
+              <button class="share-btn" onclick="printReport()"><i class="fa fa-print"></i> 打印</button>
             </div>
           </div>
         </div>
@@ -621,6 +792,84 @@
     
     // 设置阅读模式按钮链接
     document.getElementById('readerModeBtn').href = `reader.html?id=${reportId}`;
+
+    // ── 多语言支持初始化 ──
+    let currentLang = 'zh';
+    if (report.multilingual && report.multilingual.enabled) {
+      const langSwitcher = document.getElementById('langSwitcher');
+      const langMenu = document.getElementById('langMenu');
+      const currentLangSpan = document.getElementById('currentLang');
+      
+      // 显示语言切换器
+      langSwitcher.style.display = 'inline-block';
+      
+      // 生成语言选项
+      langMenu.innerHTML = report.multilingual.languages.map(lang => `
+        <button class="lang-option ${lang.code === currentLang ? 'active' : ''}" 
+                onclick="switchLanguage('${lang.code}')" 
+                data-lang="${lang.code}">
+          ${lang.name}
+        </button>
+      `).join('');
+      
+      // 从URL参数获取语言设置
+      const langParam = urlParams.get('lang');
+      if (langParam && report.multilingual.languages.find(l => l.code === langParam)) {
+        currentLang = langParam;
+        updateLanguageUI(currentLang);
+      }
+    }
+    
+    // 切换语言菜单显示
+    function toggleLangMenu() {
+      document.getElementById('langMenu').classList.toggle('active');
+    }
+    
+    // 点击外部关闭语言菜单
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.lang-switcher')) {
+        document.getElementById('langMenu').classList.remove('active');
+      }
+    });
+    
+    // 切换语言
+    function switchLanguage(langCode) {
+      currentLang = langCode;
+      updateLanguageUI(langCode);
+      
+      // 更新URL参数
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('lang', langCode);
+      window.history.replaceState({}, '', newUrl);
+      
+      // 关闭菜单
+      document.getElementById('langMenu').classList.remove('active');
+      
+      // 如果全文阅读区域已展开，重新加载内容
+      const fullContentWrapper = document.getElementById('fullContentWrapper');
+      if (fullContentWrapper && fullContentWrapper.classList.contains('active')) {
+        loadReportContent();
+      }
+      
+      // 如果打印区域已加载，重新加载
+      const printArea = document.getElementById('printContentArea');
+      if (printArea && printArea.style.display === 'block') {
+        printReport();
+      }
+    }
+    
+    // 更新语言UI
+    function updateLanguageUI(langCode) {
+      const lang = report.multilingual.languages.find(l => l.code === langCode);
+      if (lang) {
+        document.getElementById('currentLang').textContent = lang.name;
+      }
+      
+      // 更新语言选项高亮
+      document.querySelectorAll('.lang-option').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === langCode);
+      });
+    }
 
     // 快速统计
     document.getElementById('quickStats').innerHTML = `
@@ -752,6 +1001,94 @@
       const text = encodeURIComponent(`推荐阅读：${report.title} - ${report.subtitle} | ObtStar`);
       window.open(`https://x.com/intent/tweet?text=${text}&url=${encodeURIComponent(window.location.href)}`, '_blank');
     }
+
+    // 打印报告 - 在当前页面加载内容并打印
+    async function printReport() {
+      // 创建打印内容区域
+      let printArea = document.getElementById('printContentArea');
+      if (!printArea) {
+        printArea = document.createElement('div');
+        printArea.id = 'printContentArea';
+        printArea.className = 'print-content-area';
+        document.body.appendChild(printArea);
+      }
+      
+      // 显示加载状态
+      printArea.innerHTML = '<div class="print-loading">正在加载报告内容...</div>';
+      printArea.style.display = 'block';
+      
+      try {
+        // 加载报告内容
+        const content = await loadReportContentForPrint();
+        printArea.innerHTML = content;
+        
+        // 触发打印
+        setTimeout(() => {
+          window.print();
+          // 打印完成后隐藏打印区域
+          setTimeout(() => {
+            printArea.style.display = 'none';
+          }, 1000);
+        }, 500);
+      } catch (error) {
+        console.error('加载打印内容失败:', error);
+        printArea.innerHTML = '<div class="print-loading">加载失败，请重试</div>';
+      }
+    }
+    
+    // 加载报告内容用于打印
+    async function loadReportContentForPrint() {
+      // 加载清单
+      const manifestResponse = await fetch(`data/reports-content/${reportId}/manifest.json`);
+      const manifest = await manifestResponse.json();
+      
+      let allSections = [];
+      
+      // 加载所有分块
+      for (let i = 0; i < manifest.totalChunks; i++) {
+        const chunkResponse = await fetch(`data/reports-content/${reportId}/chunk-${i}.js`);
+        const jsCode = await chunkResponse.text();
+        
+        // 执行JS代码
+        const script = document.createElement('script');
+        script.textContent = jsCode;
+        document.head.appendChild(script);
+        
+        // 获取内容
+        const chunkKey = `REPORT_CHUNK_${reportId.replace(/-/g, '_')}_${i}`;
+        const chunk = window[chunkKey];
+        
+        if (chunk && chunk.sections) {
+          allSections = allSections.concat(chunk.sections);
+        }
+      }
+      
+      // 根据当前语言过滤内容
+      if (currentLang !== 'bilingual' && report.multilingual && report.multilingual.enabled) {
+        allSections = filterSectionsByLanguage(allSections, currentLang);
+      }
+      
+      // 生成HTML内容
+      let html = `
+        <div class="print-header">
+          <h1>${report.title}</h1>
+          <p class="print-subtitle">${report.subtitle}</p>
+          <p class="print-meta">来源: ${report.source} | 发布日期: ${report.date}</p>
+        </div>
+        <div class="print-body">
+      `;
+      
+      allSections.forEach((section, idx) => {
+        const tag = section.level === 1 ? 'h2' : 'h3';
+        html += `
+          <${tag}>${section.title}</${tag}>
+          ${section.content}
+        `;
+      });
+      
+      html += '</div>';
+      return html;
+    }
     function scrollToChapter(i) {
       const items = document.querySelectorAll('.chapter-item');
       if (items[i]) items[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -792,6 +1129,10 @@
       const contentBody = document.getElementById('fullContentBody');
       const pagination = document.getElementById('contentPagination');
       
+      // 显示加载状态
+      loading.style.display = 'block';
+      contentBody.style.display = 'none';
+      
       // 模拟加载延迟
       setTimeout(() => {
         // 获取当前报告的内容数据
@@ -802,12 +1143,40 @@
           return;
         }
         
+        // 根据当前语言过滤内容
+        let sections = reportContent.sections;
+        if (currentLang !== 'bilingual' && report.multilingual && report.multilingual.enabled) {
+          sections = filterSectionsByLanguage(sections, currentLang);
+        }
+        
+        // 更新 reportContent 用于渲染
+        reportContent = {
+          ...reportContent,
+          sections: sections
+        };
+        
         loading.style.display = 'none';
         contentBody.style.display = 'block';
         pagination.style.display = 'flex';
         
         renderPage(1);
       }, 500);
+    }
+    
+    // 根据语言过滤章节
+    function filterSectionsByLanguage(sections, lang) {
+      return sections.filter(section => {
+        // 如果章节没有指定语言，默认显示
+        if (!section.lang) return true;
+        
+        // 如果章节有语言标记，匹配当前语言
+        if (section.lang === lang) return true;
+        
+        // 双语模式下显示所有
+        if (lang === 'bilingual') return true;
+        
+        return false;
+      });
     }
 
     function renderPage(page) {

@@ -198,6 +198,16 @@ const REPORTS = [
       { title: '第四章：代码与结构化输出', desc: '代码生成与JSON/Markdown结构化提示' },
       { title: '第五章：工程化实践', desc: '生产环境的Prompt管理与优化' },
     ],
+    // 多语言支持配置
+    multilingual: {
+      enabled: true,
+      default: 'zh',
+      languages: [
+        { code: 'zh', name: '中文', nameEn: 'Chinese' },
+        { code: 'en', name: 'English', nameEn: 'English' },
+        { code: 'bilingual', name: '中英双语', nameEn: 'Bilingual' }
+      ]
+    },
     featured: true,
     source: 'Google · 双语整理版',
     color: '#D97706',

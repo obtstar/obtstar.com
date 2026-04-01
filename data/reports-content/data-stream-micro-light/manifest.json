@@ -1,0 +1,22 @@
+{
+  "id": "data-stream-micro-light",
+  "title": "数据洪流与微光",
+  "totalPages": 45,
+  "totalChunks": 2,
+  "chunks": [
+    {
+      "index": 0,
+      "file": "chunk-0.js",
+      "sections": ["摘要", "序章：洪流来临", "第一纪：觉醒"],
+      "pageRange": "1-22",
+      "size": "约12KB"
+    },
+    {
+      "index": 1,
+      "file": "chunk-1.js",
+      "sections": ["第二纪：共生", "终章：微光永恒", "启示与思考"],
+      "pageRange": "23-45",
+      "size": "约15KB"
+    }
+  ]
+}

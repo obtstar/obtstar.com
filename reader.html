@@ -700,6 +700,10 @@
 
   <!-- 数据文件 -->
   <script src="data/reports.js"></script>
+  <!-- 主题管理器 -->
+  <script src="js/theme-manager.js"></script>
+  <!-- 书签系统 -->
+  <script src="js/bookmarks.js"></script>
   
   <script>
     // 获取URL参数
@@ -1028,8 +1032,17 @@
 
     // 切换主题
     function toggleTheme() {
-      isDark = !isDark;
-      document.body.classList.toggle('theme-dark', isDark);
+      // 使用全局主题管理器
+      if (window.themeManager) {
+        window.themeManager.toggle();
+        const isDark = window.themeManager.isDark();
+        document.body.classList.toggle('theme-dark', isDark);
+        document.getElementById('themeIcon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+      } else {
+        // 降级：使用本地状态
+        isDark = !isDark;
+        document.body.classList.toggle('theme-dark', isDark);
+      }
       document.getElementById('themeIcon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
     }
 

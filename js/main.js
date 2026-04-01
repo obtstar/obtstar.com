@@ -217,6 +217,134 @@
     });
   }
 
+  // ── 回到顶部按钮 ──────────────────────────────────
+  function initBackToTop() {
+    // 创建按钮
+    const btn = document.createElement('button');
+    btn.className = 'back-to-top';
+    btn.setAttribute('aria-label', '回到顶部');
+    btn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+    document.body.appendChild(btn);
+
+    // 滚动显示/隐藏
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('visible', window.scrollY > window.innerHeight * 0.5);
+    }, { passive: true });
+
+    // 点击回到顶部
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // ── 键盘导航 ─────────────────────────────────────
+  function initKeyboardNav() {
+    document.addEventListener('keydown', (e) => {
+      // Esc 关闭移动菜单
+      if (e.key === 'Escape') {
+        const navLinks = document.getElementById('navLinks');
+        if (navLinks && navLinks.classList.contains('open')) {
+          navLinks.classList.remove('open');
+        }
+      }
+
+      // ? 显示快捷键提示
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const activeEl = document.activeElement;
+        const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+        if (!isInput) {
+          showKeyboardShortcuts();
+        }
+      }
+
+      // G 然后 H 回到首页
+      if (e.key === 'h' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const activeEl = document.activeElement;
+        const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+        if (!isInput) {
+          window.location.href = 'index.html';
+        }
+      }
+
+      // G 然后 R 跳转到报告库
+      if (e.key === 'r' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const activeEl = document.activeElement;
+        const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+        if (!isInput) {
+          window.location.href = 'reports.html';
+        }
+      }
+    });
+  }
+
+  // 显示键盘快捷键提示
+  function showKeyboardShortcuts() {
+    const existing = document.getElementById('keyboard-hints');
+    if (existing) {
+      existing.remove();
+      return;
+    }
+
+    const hints = document.createElement('div');
+    hints.id = 'keyboard-hints';
+    hints.innerHTML = `
+      <div style="
+        position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+        background:var(--bg-white);border:1px solid var(--border);
+        border-radius:var(--radius-xl);padding:2rem;z-index:10000;
+        box-shadow:var(--shadow-lg);min-width:300px;
+      ">
+        <h3 style="margin-bottom:1rem;font-size:1.125rem">⌨️ 键盘快捷键</h3>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.9rem;color:var(--text-body)">
+          <div style="display:flex;justify-content:space-between">
+            <span>回到首页</span><kbd style="background:var(--bg-subtle);padding:0.125rem 0.5rem;border-radius:4px;font-size:0.8rem">G H</kbd>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>报告库</span><kbd style="background:var(--bg-subtle);padding:0.125rem 0.5rem;border-radius:4px;font-size:0.8rem">G R</kbd>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>关闭弹窗</span><kbd style="background:var(--bg-subtle);padding:0.125rem 0.5rem;border-radius:4px;font-size:0.8rem">Esc</kbd>
+          </div>
+        </div>
+        <button onclick="this.parentElement.remove()" style="
+          margin-top:1rem;width:100%;padding:0.5rem;background:var(--primary);
+          color:white;border:none;border-radius:var(--radius-md);cursor:pointer;
+        ">关闭</button>
+      </div>
+    `;
+
+    // 点击外部关闭
+    const overlay = document.createElement('div');
+    overlay.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:9999;';
+    overlay.onclick = () => hints.remove();
+    document.body.appendChild(overlay);
+    document.body.appendChild(hints);
+  }
+
+  // ── 初始化主题切换按钮 ────────────────────────────
+  function initThemeToggle() {
+    const navToggle = document.getElementById('themeToggle');
+    if (navToggle) {
+      navToggle.addEventListener('click', () => {
+        window.themeManager.toggle();
+      });
+    }
+  }
+
+  // ── 搜索高亮 ─────────────────────────────────────
+  function initSearchHighlight() {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) {
+      document.querySelectorAll('.report-card, .report-card-sm').forEach(card => {
+        const text = card.textContent;
+        if (text.toLowerCase().includes(q.toLowerCase())) {
+          card.style.boxShadow = '0 0 0 2px var(--primary), var(--shadow-md)';
+        }
+      });
+    }
+  }
+
   // ── 执行所有初始化 ───────────────────────────────
   function ready(fn) {
     if (document.readyState !== 'loading') fn();
@@ -230,6 +358,10 @@
     initSmoothHash();
     initCardGlow();
     initMiniProgress();
+    initBackToTop();
+    initKeyboardNav();
+    initThemeToggle();
+    initSearchHighlight();
 
     // DOM 稳定后再挂交互
     setTimeout(() => {

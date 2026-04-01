@@ -5,6 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ObtStar · 探索AI前沿 · 洞察数字未来</title>
   <meta name="description" content="汇聚AI时代最具洞察力的研究报告，覆盖信息质量、数字化转型、知识架构、未来推演等核心议题。" />
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://obtstar.com/index.html" />
+  
+  <!-- 性能优化：资源预连接 -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+  <!-- 性能优化：DNS 预取 -->
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+  
+  <!-- 性能优化：资源预加载 -->
+  <link rel="preload" href="css/styles.css" as="style" />
+  <link rel="preload" href="css/components.css" as="style" />
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" as="style" />
+  
+  <!-- SEO：Open Graph -->
+  <meta property="og:title" content="ObtStar · 探索AI前沿 · 洞察数字未来" />
+  <meta property="og:description" content="汇聚AI时代最具洞察力的研究报告，覆盖信息质量、数字化转型、知识架构、未来推演等核心议题。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://obtstar.com/index.html" />
+  <meta property="og:image" content="https://obtstar.com/og-image.png" />
+  <meta property="og:locale" content="zh_CN" />
+  
+  <!-- SEO：Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ObtStar · 探索AI前沿 · 洞察数字未来" />
+  <meta name="twitter:description" content="汇聚AI时代最具洞察力的研究报告。" />
+  <meta name="twitter:image" content="https://obtstar.com/og-image.png" />
+  
+  <!-- SEO：JSON-LD 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "ObtStar",
+    "description": "AI时代研究报告聚合平台",
+    "url": "https://obtstar.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://obtstar.com/reports.html?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/components.css" />
   <!-- AOS 滚动动画 -->
@@ -231,7 +280,13 @@
         <a href="reports.html">研究报告</a>
         <a href="about.html">关于</a>
       </div>
-      <button class="nav-toggle" onclick="toggleNav()"><i class="fa fa-bars"></i></button>
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <button class="theme-toggle" id="themeToggle" title="切换深色模式" aria-label="切换深色模式">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </button>
+        <button class="nav-toggle" onclick="toggleNav()"><i class="fa fa-bars"></i></button>
+      </div>
     </div>
     <div class="reading-progress" id="readingProgress"></div>
   </nav>
@@ -442,6 +497,8 @@
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script src="js/particles.js"></script>
   <script src="js/api-client.js"></script>
+  <script src="js/theme-manager.js"></script>
+  <script src="js/bookmarks.js"></script>
 
   <script>
     // 初始化 AOS

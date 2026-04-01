@@ -190,7 +190,13 @@
         <li><a href="about.html" class="active">关于</a></li>
         <li><a href="reports.html" class="nav-cta">浏览全部 →</a></li>
       </ul>
-      <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <button class="theme-toggle" id="themeToggle" title="切换深色模式" aria-label="切换深色模式">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </button>
+        <button class="nav-toggle" onclick="toggleNav()"><i class="fa fa-bars"></i></button>
+      </div>
     </div>
   </nav>
 
@@ -530,6 +536,8 @@
 
   <script src="data/reports.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script src="js/theme-manager.js"></script>
+  <script src="js/bookmarks.js"></script>
   <script>
     AOS.init({ duration: 700, easing: 'ease-out-cubic', once: true, offset: 60 });
     function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }

@@ -12,19 +12,23 @@ class ThemeManager {
   }
   
   init() {
-    // 优先读取用户存储的主题
+    // 优先读取已设置的主题（由<head>内联脚本设置）
+    const existingTheme = document.documentElement.getAttribute('data-theme');
     const savedTheme = localStorage.getItem(this.storageKey);
     
-    if (savedTheme) {
+    if (existingTheme) {
+      // 使用已设置的主题
+      this.currentTheme = existingTheme;
+    } else if (savedTheme) {
       // 使用用户保存的主题
       this.currentTheme = savedTheme;
+      this.applyTheme(this.currentTheme);
     } else {
       // 检测系统偏好
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       this.currentTheme = prefersDark ? 'dark' : 'light';
+      this.applyTheme(this.currentTheme);
     }
-    
-    this.applyTheme(this.currentTheme);
     
     // 监听系统主题变化
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

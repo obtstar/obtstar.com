@@ -1,10 +1,19 @@
 /**
  * ObtStar API 模块
- * 遵循 RESTful API 规范 (RFC 7231) 和 W3C HTTP 标准
+ * 遵循 RESTful API 规范 (RFC 7231, RFC 7807) 和 W3C HTTP 标准
+ * 
+ * API 设计原则:
+ * - 使用名词复数形式表示资源集合
+ * - 使用 HTTP 方法表示操作 (GET/POST/PUT/DELETE)
+ * - 使用标准 HTTP 状态码
+ * - 遵循 RFC 7807 Problem Details 错误格式
+ * - 支持 HATEOAS 风格的链接
  */
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const { URL } = require('url');
 
 // 数据缓存
 let categoriesCache = null;
@@ -13,19 +22,31 @@ const contentCache = new Map();
 const manifestCache = new Map();
 
 /**
- * 标准 HTTP 状态码
+ * 标准 HTTP 状态码 (RFC 7231)
  */
 const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,
   NO_CONTENT: 204,
+  NOT_MODIFIED: 304,
   BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
   NOT_FOUND: 404,
   METHOD_NOT_ALLOWED: 405,
   NOT_ACCEPTABLE: 406,
+  CONFLICT: 409,
   UNSUPPORTED_MEDIA_TYPE: 415,
-  INTERNAL_SERVER_ERROR: 500
+  UNPROCESSABLE_ENTITY: 422,
+  TOO_MANY_REQUESTS: 429,
+  INTERNAL_SERVER_ERROR: 500,
+  SERVICE_UNAVAILABLE: 503
 };
+
+/**
+ * API 版本
+ */
+const API_VERSION = '1.0.0';
 
 /**
  * 加载分类数据
@@ -236,33 +257,72 @@ function loadContentChunk(reportId, chunkIndex) {
 }
 
 /**
- * 生成 ETag
+ * 生成 ETag (RFC 7232)
+ * @param {string|Buffer} data - 数据内容
+ * @returns {string} ETag 值
  */
 function generateETag(data) {
-  const crypto = require('crypto');
-  return crypto.createHash('md5').update(JSON.stringify(data)).digest('hex');
+  const hash = crypto.createHash('sha256');
+  hash.update(typeof data === 'string' ? data : JSON.stringify(data));
+  return hash.digest('hex').substring(0, 16);
 }
 
 /**
- * 设置标准响应头
+ * 检查 If-None-Match 条件
+ * @param {Object} req - HTTP 请求对象
+ * @param {string} etag - 当前 ETag
+ * @returns {boolean} 是否匹配
+ */
+function isNotModified(req, etag) {
+  const ifNoneMatch = req.headers['if-none-match'];
+  if (!ifNoneMatch) return false;
+  return ifNoneMatch === `"${etag}"` || ifNoneMatch === etag || ifNoneMatch === '*';
+}
+
+/**
+ * 设置标准响应头 (RFC 7231, RFC 7234)
+ * @param {Object} res - HTTP 响应对象
+ * @param {Object} options - 配置选项
+ * @param {boolean} options.cache - 是否启用缓存
+ * @param {string} options.etag - ETag 值
+ * @param {number} options.maxAge - 缓存最大年龄（秒）
  */
 function setStandardHeaders(res, options = {}) {
+  // 内容类型
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  
+  // CORS 头
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
-  res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page, X-Limit');
-  res.setHeader('Vary', 'Accept-Encoding');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Accept-Language');
+  res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page, X-Limit, X-API-Version, Link');
+  res.setHeader('Access-Control-Max-Age', '86400');
   
+  // 内容协商
+  res.setHeader('Vary', 'Accept, Accept-Encoding, Accept-Language');
+  
+  // API 版本
+  res.setHeader('X-API-Version', API_VERSION);
+  
+  // 缓存控制 (RFC 7234)
   if (options.cache) {
-    res.setHeader('Cache-Control', 'public, max-age=300');
+    const maxAge = options.maxAge || 300;
+    res.setHeader('Cache-Control', `public, max-age=${maxAge}, stale-while-revalidate=60`);
   } else {
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
   }
   
+  // ETag (RFC 7232)
   if (options.etag) {
     res.setHeader('ETag', `"${options.etag}"`);
   }
+  
+  // 安全头
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
 }
 
 /**
@@ -276,18 +336,51 @@ function sendResponse(res, statusCode, data, options = {}) {
 
 /**
  * 发送错误响应 (RFC 7807 Problem Details)
+ * @param {Object} res - HTTP 响应对象
+ * @param {number} statusCode - HTTP 状态码
+ * @param {string} title - 错误标题
+ * @param {string} detail - 错误详情
+ * @param {string} instance - 错误实例 URI
+ * @param {Object} extensions - 扩展字段
  */
-function sendError(res, statusCode, title, detail, instance) {
+function sendError(res, statusCode, title, detail, instance, extensions = {}) {
   const errorResponse = {
     type: `https://api.obtstar.com/errors/${statusCode}`,
     title,
     status: statusCode,
     detail,
-    instance: instance || '/api' + (require('url').parse(res.req.url).pathname)
+    instance: instance || '/api' + (new URL(res.req.url, `http://${res.req.headers.host}`).pathname),
+    timestamp: new Date().toISOString(),
+    ...extensions
   };
   
   res.setHeader('Content-Type', 'application/problem+json; charset=utf-8');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
   res.writeHead(statusCode);
+  res.end(JSON.stringify(errorResponse));
+}
+
+/**
+ * 发送验证错误响应 (RFC 7807 + RFC 9457)
+ * @param {Object} res - HTTP 响应对象
+ * @param {Array} errors - 验证错误列表
+ */
+function sendValidationError(res, errors) {
+  const errorResponse = {
+    type: 'https://api.obtstar.com/errors/validation-failed',
+    title: 'Validation Failed',
+    status: HTTP_STATUS.UNPROCESSABLE_ENTITY,
+    errors: errors.map(err => ({
+      field: err.field,
+      message: err.message,
+      code: err.code || 'invalid'
+    })),
+    timestamp: new Date().toISOString()
+  };
+  
+  res.setHeader('Content-Type', 'application/problem+json; charset=utf-8');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.writeHead(HTTP_STATUS.UNPROCESSABLE_ENTITY);
   res.end(JSON.stringify(errorResponse));
 }
 
@@ -319,6 +412,13 @@ function isValidReportId(id) {
 
 /**
  * GET /categories - 获取所有分类
+ * 
+ * 响应格式 (200 OK):
+ * {
+ *   data: Category[],
+ *   meta: { total: number },
+ *   links: { self: string }
+ * }
  */
 function getCategories(req, res) {
   if (!checkContentNegotiation(req, res)) return;
@@ -326,13 +426,30 @@ function getCategories(req, res) {
   const categories = loadCategories();
   const etag = generateETag(categories);
   
-  if (req.headers['if-none-match'] === `"${etag}"`) {
-    res.writeHead(304);
+  // RFC 7232 条件请求处理
+  if (isNotModified(req, etag)) {
+    res.writeHead(HTTP_STATUS.NOT_MODIFIED);
     res.end();
     return;
   }
   
-  sendResponse(res, HTTP_STATUS.OK, categories, { cache: true, etag });
+  const response = {
+    data: categories,
+    meta: {
+      total: categories.length,
+      version: API_VERSION
+    },
+    links: {
+      self: '/api/categories',
+      reports: '/api/reports'
+    }
+  };
+  
+  sendResponse(res, HTTP_STATUS.OK, response, { 
+    cache: true, 
+    etag,
+    maxAge: 3600 // 分类数据缓存1小时
+  });
 }
 
 /**
@@ -406,27 +523,68 @@ function getReports(req, res, query) {
   const paginatedReports = reports.slice(start, end);
   const totalPages = Math.ceil(reports.length / limit);
   
+  // 构建查询参数（用于链接）
+  const buildQuery = (pageNum) => {
+    const params = new URLSearchParams();
+    params.set('page', pageNum);
+    params.set('limit', limit);
+    if (query.category && query.category !== 'all') params.set('category', query.category);
+    if (query.search) params.set('search', query.search);
+    if (query.tag) params.set('tag', query.tag);
+    if (query.sort) params.set('sort', query.sort);
+    return params.toString();
+  };
+  
   const responseData = {
-    data: paginatedReports,
+    data: paginatedReports.map(report => ({
+      ...report,
+      links: {
+        self: `/api/reports/${report.id}`,
+        manifest: `/api/reports/${report.id}/manifest`,
+        sections: `/api/reports/${report.id}/sections`
+      }
+    })),
     meta: {
       total: reports.length,
       page,
       limit,
-      totalPages
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1
     },
     links: {
-      self: `/reports?page=${page}&limit=${limit}`,
-      first: `/reports?page=1&limit=${limit}`,
-      last: `/reports?page=${totalPages}&limit=${limit}`,
-      ...(page > 1 && { prev: `/reports?page=${page - 1}&limit=${limit}` }),
-      ...(page < totalPages && { next: `/reports?page=${page + 1}&limit=${limit}` })
+      self: `/api/reports?${buildQuery(page)}`,
+      first: `/api/reports?${buildQuery(1)}`,
+      last: `/api/reports?${buildQuery(totalPages)}`,
+      ...(page > 1 && { prev: `/api/reports?${buildQuery(page - 1)}` }),
+      ...(page < totalPages && { next: `/api/reports?${buildQuery(page + 1)}` })
     }
   };
   
-  setStandardHeaders(res, { cache: true });
+  // 生成 ETag
+  const etag = generateETag(responseData);
+  
+  // RFC 7232 条件请求
+  if (isNotModified(req, etag)) {
+    res.writeHead(HTTP_STATUS.NOT_MODIFIED);
+    res.end();
+    return;
+  }
+  
+  setStandardHeaders(res, { cache: true, etag, maxAge: 60 });
   res.setHeader('X-Total-Count', reports.length);
   res.setHeader('X-Page', page);
   res.setHeader('X-Limit', limit);
+  
+  // RFC 5988 Web Linking
+  const links = [];
+  links.push(`</api/reports?${buildQuery(page)}>; rel="self"`);
+  links.push(`</api/reports?${buildQuery(1)}>; rel="first"`);
+  links.push(`</api/reports?${buildQuery(totalPages)}>; rel="last"`);
+  if (page > 1) links.push(`</api/reports?${buildQuery(page - 1)}>; rel="prev"`);
+  if (page < totalPages) links.push(`</api/reports?${buildQuery(page + 1)}>; rel="next"`);
+  res.setHeader('Link', links.join(', '));
+  
   res.writeHead(HTTP_STATUS.OK);
   res.end(JSON.stringify(responseData));
 }

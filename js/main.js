@@ -1,11 +1,34 @@
 /**
  * ObtStar 全局动效脚本
  * 包含：3D卡片悬停、滚动视差、卡片光晕跟踪、平滑导航等
+ * 
+ * 无障碍支持：
+ * - 尊重 prefers-reduced-motion 用户偏好
+ * - 所有动画均可被禁用
  */
 (function () {
+  'use strict';
+
+  // 检测用户是否偏好减少动画
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  /**
+   * HTML 转义函数 - 防止 XSS
+   * @param {string} text - 需要转义的文本
+   * @returns {string} 转义后的文本
+   */
+  function escapeHtml(text) {
+    if (typeof text !== 'string') return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
 
   // ── 3D 卡片悬停倾斜效果 ─────────────────────────
   function init3DCards() {
+    // 如果用户偏好减少动画，跳过此效果
+    if (prefersReducedMotion) return;
+    
     const cards = document.querySelectorAll('.report-card, .value-card, .stat-card');
     cards.forEach(card => {
       card.addEventListener('mousemove', e => {
@@ -132,10 +155,13 @@
 
   // ── 标签云交互色 ──────────────────────────────────
   function initTagHover() {
+    // 如果用户偏好减少动画，跳过变换效果
     document.querySelectorAll('.tag').forEach(tag => {
       tag.addEventListener('mouseenter', () => {
-        tag.style.transform = 'scale(1.08) translateY(-1px)';
-        tag.style.transition = 'transform 0.2s ease';
+        if (!prefersReducedMotion) {
+          tag.style.transform = 'scale(1.08) translateY(-1px)';
+          tag.style.transition = 'transform 0.2s ease';
+        }
       });
       tag.addEventListener('mouseleave', () => {
         tag.style.transform = '';
@@ -145,6 +171,13 @@
 
   // ── 过渡进场动画（页面加载）──────────────────────
   function initPageEntrance() {
+    // 如果用户偏好减少动画，直接显示内容
+    if (prefersReducedMotion) {
+      document.body.style.opacity = '1';
+      document.body.style.transform = 'none';
+      return;
+    }
+    
     document.body.style.opacity = '0';
     document.body.style.transform = 'translateY(8px)';
     document.body.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
@@ -160,11 +193,20 @@
   function initCounters() {
     const counterEls = document.querySelectorAll('.stat-num[data-count]');
     if (!counterEls.length) return;
+    
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         const el = entry.target;
         const target = parseInt(el.getAttribute('data-count'));
+        
+        // 如果用户偏好减少动画，直接显示最终值
+        if (prefersReducedMotion) {
+          el.textContent = target.toLocaleString();
+          observer.unobserve(el);
+          return;
+        }
+        
         const duration = 1600;
         const start = Date.now();
         const startVal = 0;
@@ -187,6 +229,13 @@
   function initCardStagger() {
     const cards = document.querySelectorAll('.report-card:not([data-aos])');
     cards.forEach((card, i) => {
+      // 如果用户偏好减少动画，直接显示
+      if (prefersReducedMotion) {
+        card.style.opacity = '1';
+        card.style.transform = 'none';
+        return;
+      }
+      
       card.style.opacity = '0';
       card.style.transform = 'translateY(24px)';
       card.style.transition = `opacity 0.5s ease ${i * 60}ms, transform 0.5s ease ${i * 60}ms`;

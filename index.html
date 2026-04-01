@@ -6,6 +6,16 @@
   <title>ObtStar · 探索AI前沿 · 洞察数字未来</title>
   <meta name="description" content="汇聚AI时代最具洞察力的研究报告，覆盖信息质量、数字化转型、知识架构、未来推演等核心议题。" />
   
+  <!-- 防止FOUC：主题检测内联脚本 -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('obtstar-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  
   <!-- Canonical URL -->
   <link rel="canonical" href="https://obtstar.com/index.html" />
   
@@ -723,6 +733,40 @@
 
     // 启动
     initPage();
+  </script>
+  
+  <!-- Service Worker 注册 -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('[SW] Registered:', registration.scope);
+            
+            // 检测更新
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // 有新版本可用
+                  if (confirm('网站有新版本，是否立即更新？')) {
+                    newWorker.postMessage('skipWaiting');
+                    window.location.reload();
+                  }
+                }
+              });
+            });
+          })
+          .catch((error) => {
+            console.log('[SW] Registration failed:', error);
+          });
+        
+        // 监听 Service Worker 更新
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('[SW] Controller changed');
+        });
+      });
+    }
   </script>
 </body>
 </html>

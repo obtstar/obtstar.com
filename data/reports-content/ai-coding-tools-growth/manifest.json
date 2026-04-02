@@ -1,22 +1,21 @@
 {
   "id": "ai-coding-tools-growth",
-  "title": "AI编程工具成长路径",
-  "totalPages": 68,
-  "totalChunks": 2,
+  "title": "AI编程工具销量增长策略",
+  "totalPages": 13,
+  "totalChunks": 1,
   "chunks": [
     {
       "index": 0,
       "file": "chunk-0.js",
-      "sections": ["摘要", "市场环境分析", "产品功能适配"],
-      "pageRange": "1-35",
-      "size": "约14KB"
-    },
-    {
-      "index": 1,
-      "file": "chunk-1.js",
-      "sections": ["定价策略", "渠道体系", "本土化挑战", "实施路线图"],
-      "pageRange": "36-68",
-      "size": "约16KB"
+      "sections": [
+        "AI编程⼯具销量增⻓策略深度研究报告",
+        "体验——当Claude 3.5 Sonnet在2024年6⽉展现出编程优势时，Cursor⽤户成为⾸",
+        "四、战术执⾏优先级矩阵",
+        "中国开发者社区的分散性特征要求采⽤\"KOL/技术⼤会+垂直社群运营\"的组合策略，以弥补",
+        "七、深度研究执⾏路径"
+      ],
+      "pageRange": "1-13",
+      "size": "约30KB"
     }
   ]
 }

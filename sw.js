@@ -8,10 +8,10 @@
  * - 图片资源: Cache First, 最长30天
  */
 
-const CACHE_NAME = 'obtstar-v1';
-const STATIC_CACHE = 'obtstar-static-v1';
-const API_CACHE = 'obtstar-api-v1';
-const IMAGE_CACHE = 'obtstar-images-v1';
+const CACHE_NAME = 'obtstar-v2';
+const STATIC_CACHE = 'obtstar-static-v2';
+const API_CACHE = 'obtstar-api-v2';
+const IMAGE_CACHE = 'obtstar-images-v2';
 
 // 预缓存的核心资源
 const PRECACHE_ASSETS = [
@@ -255,6 +255,15 @@ self.addEventListener('fetch', (event) => {
           .catch(() => caches.match(request))
       );
   }
+});
+
+// SW 激活时清理旧版本缓存
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k.includes('obtstar-') && !k.includes('v2')).map(k => caches.delete(k)))
+    )
+  );
 });
 
 // 后台同步事件（用于离线操作）

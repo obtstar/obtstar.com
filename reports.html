@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>研究报告库 · ObtStar</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
@@ -468,7 +469,7 @@
   <!-- 导航栏 -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="index.html" class="logo">ObtStar</a>
+      <a href="index.html" class="logo">Obt<span>★</span>Star</a>
       <div class="nav-links" id="navLinks">
         <a href="index.html">首页</a>
         <a href="reports.html" class="active">研究报告</a>
@@ -616,7 +617,7 @@
       <div class="footer-main">
         <div class="footer-brand">
           <div class="footer-logo-row">
-            <span class="footer-logo">ObtStar</span>
+            <span class="footer-logo">Obt★Star</span>
             <span class="footer-badge">Research Hub</span>
           </div>
           <p class="footer-desc">探索 AI 前沿，洞察数字未来。汇聚最具价值的研究报告与深度分析。</p>
@@ -832,11 +833,14 @@
           `;
         }
 
+
         const { data: filtered, meta } = await ObtStarAPI.getReportsCached(params);
+        const totalCount = (meta && meta.total != null) ? meta.total : filtered.length;
 
         // 更新分类标题计数
-        document.getElementById('currentCatCount').textContent = `找到 ${meta.total} 篇报告`;
-        document.getElementById('resultsInfo').innerHTML = `共 <strong>${meta.total}</strong> 篇报告`;
+        document.getElementById('currentCatCount').textContent = `找到 ${totalCount} 篇报告`;
+        document.getElementById('resultsInfo').innerHTML = `共 <strong>${totalCount}</strong> 篇报告`;
+
 
         const empty = document.getElementById('emptyState');
 

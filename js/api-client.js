@@ -152,17 +152,20 @@ async function getCategoriesCached() {
   const cached = getCached('categories');
   if (cached) return { data: cached };
   const result = await getCategories();
-  setCached('categories', result);
-  return { data: result };
+  // 只缓存 data 数组，避免二次嵌套
+  setCached('categories', result.data);
+  return { data: result.data };
 }
 
 async function getReportsCached(params = {}) {
   const cacheKey = `reports_${JSON.stringify(params)}`;
   const cached = getCached(cacheKey);
-  if (cached) return { data: cached.data, meta: cached.meta };
+  // 缓存整个 { data, meta } 对象，确保 meta 不丢失
+  if (cached) return cached;
   const result = await getReports(params);
-  setCached(cacheKey, result);
-  return result;
+  const payload = { data: result.data, meta: result.meta };
+  setCached(cacheKey, payload);
+  return payload;
 }
 
 async function getReportByIdCached(reportId) {
@@ -170,24 +173,29 @@ async function getReportByIdCached(reportId) {
   const cached = getCached(cacheKey);
   if (cached) return { data: cached };
   const result = await getReportById(reportId);
+  // 只缓存 data 对象
   setCached(cacheKey, result.data);
-  return result;
+  return { data: result.data };
 }
 
 async function getHotTagsCached() {
   const cached = getCached('tags');
   if (cached) return { data: cached };
   const result = await getHotTags();
-  setCached('tags', result);
-  return { data: result };
+  // /api/tags 直接返回数组，没有 .data 包裹
+  const data = Array.isArray(result) ? result : (result.data || result);
+  setCached('tags', data);
+  return { data };
 }
 
 async function getSourcesCached() {
   const cached = getCached('sources');
   if (cached) return { data: cached };
   const result = await getSources();
-  setCached('sources', result);
-  return { data: result };
+  // /api/sources 直接返回数组，没有 .data 包裹
+  const data = Array.isArray(result) ? result : (result.data || result);
+  setCached('sources', data);
+  return { data };
 }
 
 // ==================== 导出 ====================
